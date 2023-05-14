@@ -1,3 +1,6 @@
+import 'package:cdio/Calendar.dart';
+import 'package:cdio/Settings.dart';
+import 'package:cdio/Task.dart';
 import 'package:flutter/material.dart';
 
 import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
@@ -19,15 +22,17 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    Text("First Page"),
-    Text("Second Page"),
-    Text("Third Page"),
+    MTask(),
+    MCalendar(),
+    MSettings(),
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: Center(
+        child: SingleChildScrollView(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
       ),
       bottomNavigationBar: MoltenBottomNavigationBar(
         selectedIndex: _selectedIndex,
