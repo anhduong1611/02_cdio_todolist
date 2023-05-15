@@ -1,9 +1,12 @@
 import 'package:cdio/Calendar.dart';
 import 'package:cdio/Settings.dart';
 import 'package:cdio/Task.dart';
+import 'package:cdio/Todolist_Color.dart';
 import 'package:flutter/material.dart';
 
 import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
+
+import 'Register.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -22,13 +25,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    MTask(),
+    MRegister(),
     MCalendar(),
     MSettings(),
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MColor.grey_background,
       body: Center(
         child: SingleChildScrollView(
           child: _widgetOptions.elementAt(_selectedIndex),
