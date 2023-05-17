@@ -1,7 +1,8 @@
 
 import 'package:cdio/Todolist_Color.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 class MRegister extends StatefulWidget {
   const MRegister({Key? key}) : super(key: key);
 
@@ -53,7 +54,22 @@ class _MRegisterState extends State<MRegister> {
                       Text('Sign In',style: TextStyle(color: MColor.blue_main,fontSize: 16),)
                     ],
                   ),
-                  onPressed: (){},
+                  onPressed: () async {
+                    try {
+                      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: 'hothianhduong16112002@gmail.com',
+                        password: '123',
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'weak-password') {
+                        print('The password provided is too weak.');
+                      } else if (e.code == 'email-already-in-use') {
+                        print('The account already exists for that email.');
+                      }
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
                 ),
               ),
             )
@@ -82,4 +98,12 @@ Widget _buildTextField(String text){
       ),
     ),
   );
+}
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+// Ideal time to initialize
+  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+//...
 }

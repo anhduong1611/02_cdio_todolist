@@ -2,13 +2,17 @@ import 'package:cdio/Calendar.dart';
 import 'package:cdio/Settings.dart';
 import 'package:cdio/Task.dart';
 import 'package:cdio/Todolist_Color.dart';
+import 'package:cdio/firebase_options.dart';
 import 'package:flutter/material.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+//import 'firebase_options.dart';
 import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
 
 import 'Register.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+   Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: MyApp(),
