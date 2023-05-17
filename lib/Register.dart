@@ -54,10 +54,10 @@ class _MRegisterState extends State<MRegister> {
                       backgroundColor:
                           MaterialStateProperty.all(MColor.blue_main),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (mpass.text == mpass_confirm.text) {
                         try {
-                          final credential = FirebaseAuth.instance
+                          UserCredential  credential = await FirebaseAuth.instance
                               .createUserWithEmailAndPassword(
                             email: memail_contro.text,
                             password: mpass.text,
@@ -76,7 +76,10 @@ class _MRegisterState extends State<MRegister> {
                               er_visible = true;
                               text_error_register ='The account already exists for that email.';
                             });
+                          }else{
+                            text_error_register = "Error from system";
                           }
+
                         } catch (e) {
                           er_visible = true;
                         }
