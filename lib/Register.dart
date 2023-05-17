@@ -29,11 +29,34 @@ class _MRegisterState extends State<MRegister> {
             _buildTextField('Enter your Email'),
             _buildTextField('Enter Password'),
             _buildTextField('Confirm password'),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: MColor.blue_main
+            Padding(
+              padding: EdgeInsets.only(left: 30,top: 10, right: 30, bottom: 10),
+              child: SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(MColor.blue_main),
+                  ),
+                    onPressed: () {
+
+                    }, child: Text('Register',style: TextStyle(fontSize: 18),)),
               ),
-                onPressed: null, child: Text('Register'))
+            ),
+            Padding(padding: EdgeInsets.only(top: 10, bottom: 40),
+              child: Center(
+                child: TextButton(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('Already have an account ?',style: TextStyle(color: Colors.black,fontSize: 16),),
+                      Text('Sign In',style: TextStyle(color: MColor.blue_main,fontSize: 16),)
+                    ],
+                  ),
+                  onPressed: (){},
+                ),
+              ),
+            )
           ],
         ),
       ),
