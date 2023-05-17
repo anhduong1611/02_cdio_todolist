@@ -39,6 +39,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       bottomNavigationBar: MoltenBottomNavigationBar(
+        domeCircleColor: MColor.blue_main,
         selectedIndex: _selectedIndex,
         onTabChange: (clickedIndex) {
           setState(() {
@@ -46,7 +47,9 @@ class _MyAppState extends State<MyApp> {
           });
         },
         tabs: [
-          MoltenTab(icon: Icon(Icons.task)),
+          MoltenTab(
+            icon: Icon(Icons.task),
+          ),
           MoltenTab(
             icon: Icon(Icons.calendar_month),
           ),
