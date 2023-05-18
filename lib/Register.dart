@@ -1,5 +1,10 @@
 import 'dart:html';
 
+import 'package:cdio/firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cdio/Task.dart';
 import 'package:cdio/Todolist_Color.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +67,7 @@ class _MRegisterState extends State<MRegister> {
                             email: memail_contro.text,
                             password: mpass.text,
                           );
+
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
                             print('The password provided is too weak.');
