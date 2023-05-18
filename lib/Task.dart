@@ -11,7 +11,7 @@ class _MTaskState extends State<MTask> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Center(child: Text("Task Screen")),
+      child: Center(child: Text(widget.Uid)),
     );
   }
 }

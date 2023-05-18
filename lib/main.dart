@@ -19,14 +19,15 @@ void main() {
 
 }
 
-class MyApp extends StatefulWidget {
-   MyApp({Key? key}) : super(key: key);
+class Mytodolist extends StatefulWidget {
+  String uid;
+   Mytodolist({Key? key,required this.uid}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<Mytodolist> createState() => _MytodolistState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MytodolistState extends State<Mytodolist> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
     MTask(),
@@ -128,7 +129,7 @@ class _MRegisterState extends State<MRegister> {
                             final FirebaseAuth auth = FirebaseAuth.instance;
                             final User? user = auth.currentUser;
                             final uid = user?.uid;
-                            Navigator.push(context, MaterialPageRoute(builder: (context) =>  MyApp( )),);
+                            Navigator.push(context, MaterialPageRoute(builder: (context) =>  Mytodolist(uid: uid.toString(),)),);
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'weak-password') {
                               print('The password provided is too weak.');
