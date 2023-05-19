@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cdio/login_screen.dart';
 
-// bịp à chạy main mà rang chạy trong ni dc
+import 'Register.dart';
+import 'main.dart';
+
 class splash_screen extends StatelessWidget {
   const splash_screen({super.key});
 
@@ -12,14 +15,14 @@ class splash_screen extends StatelessWidget {
       body: Stack(
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset('assest/image/shape.png'),
+          Image.asset('assets/image/shape.png'),
           Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 15),
-                child: Image.asset('assest/image/Logo.png',
+                child: Image.asset('assets/image/logo_login.png',
                     alignment: Alignment.center),
               ),
               SizedBox(
@@ -47,10 +50,7 @@ class splash_screen extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Login_Screen()),
-                    );
+                    check(context);
                   },
                 ),
               ),
@@ -61,4 +61,23 @@ class splash_screen extends StatelessWidget {
       ),
     );
   }
+}
+
+void check(BuildContext context) async {
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    if (user == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MRegister()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Mytodolist(
+                  uid: user.uid,
+                )),
+      );
+    }
+  });
 }

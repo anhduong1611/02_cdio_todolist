@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'main.dart';
 void main() async {
   // runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Login_Screen()));
 }
-//reng main ở trong ni
 class Login_Screen extends StatefulWidget {
   const Login_Screen({super.key});
 
@@ -68,7 +69,7 @@ class _login_screenState extends State<login_screen> {
     return SingleChildScrollView(
       child: Stack(
         children: [
-          Image.asset('assest/image/shape.png'),
+          Image.asset('assets/image/shape.png'),
           Padding(
             padding: const EdgeInsets.only(top: 120),
             child: Center(
@@ -80,7 +81,7 @@ class _login_screenState extends State<login_screen> {
                     'Welcome back',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                   ),
-                  Image.asset('assest/image/logo_login.png',
+                  Image.asset('assets/image/logo_login.png',
                       alignment: Alignment.center),
                   SizedBox(
                     height: 20,
@@ -177,12 +178,12 @@ class _login_screenState extends State<login_screen> {
                       onPressed: () async {
                         User? user = await loginUsingEmailPassword(email: _emailController.text, password: _passwordController.text, context: context);
                         print(user);
-                    //     if(user != null) {
-                    //        Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Task_Screen()),
-                    // );
-                    //     }
+                        if(user != null) {
+                           Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Mytodolist(uid: user.uid,)),
+                    );
+                        }
                       },
                     ),
                   ),
