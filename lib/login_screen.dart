@@ -2,11 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:todolist/task_screen.dart';
-
+//í là lỡ là chung r thì uo lên chung lun i
+// dỡ merge splash thấy up r mà
+//thoi up chung vs cai lopgin di bỏ nhanh splash cũn d
+// dô git chua
 void main() async {
   // runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Login_Screen()));
 }
-
+//reng main ở trong ni
 class Login_Screen extends StatefulWidget {
   const Login_Screen({super.key});
 
