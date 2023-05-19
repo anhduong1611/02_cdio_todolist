@@ -19,7 +19,7 @@ void main() {
   Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MaterialApp(
-    home: splash_screen(),
+    home: Mytodolist(uid: 'q',),
     debugShowCheckedModeBanner: false,
   ));
 }
@@ -39,15 +39,19 @@ class _MytodolistState extends State<Mytodolist> {
     MCalendar(),
     MSettings(),
   ];
+  List
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MColor.grey_background,
       body: Center(
         child: SingleChildScrollView(
-          child: _widgetOptions.elementAt(_selectedIndex),
+          child: Container(
+            child: _widgetOptions.elementAt(_selectedIndex),
+          ),
         ),
       ),
+      floatingActionButton: FloatingActionButton.large(onPressed: (){},child: Icon(Icons.add,size: 40,),backgroundColor: MColor.blue_main,),
       bottomNavigationBar: MoltenBottomNavigationBar(
         domeCircleColor: MColor.blue_main,
         selectedIndex: _selectedIndex,
