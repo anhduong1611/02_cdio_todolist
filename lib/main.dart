@@ -1,6 +1,7 @@
 import 'package:cdio/Calendar.dart';
 import 'package:cdio/Settings.dart';
 import 'package:cdio/Task.dart';
+import 'package:cdio/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
@@ -8,7 +9,7 @@ import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: MyApp(),
+    home: splash_screen(),
   ));
 }
 
