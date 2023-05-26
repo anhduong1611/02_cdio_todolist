@@ -1,7 +1,9 @@
+import 'package:cdio/Task.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'package:google_sign_in/google_sign_in.dart';
 import 'main.dart';
 void main() async {
   // runApp(MaterialApp(debugShowCheckedModeBanner: false, home: Login_Screen()));
@@ -62,6 +64,29 @@ class _login_screenState extends State<login_screen> {
     }
     return user;
   }
+
+   //google gmail
+  Future<UserCredential?> signInWithGoogle() async {
+    // Create an instance of the firebase auth and google signin
+    FirebaseAuth auth = FirebaseAuth.instance;
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    //Triger the authentication flow
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+    //Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
+    //Create a new credentials
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    //Sign in the user with the credentials
+    final UserCredential userCredential =
+        await auth.signInWithCredential(credential);
+    return userCredential;
+  }
+   
   @override
   Widget build(BuildContext context) {
     TextEditingController _emailController = TextEditingController();
@@ -202,6 +227,34 @@ class _login_screenState extends State<login_screen> {
                         style: TextStyle(
                             fontSize: 16,
                             color: Color.fromRGBO(80, 194, 201, 1)),
+                      )
+                    ],
+                  ),
+                   SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          await signInWithGoogle();
+                          if (mounted) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MTask(),
+                              ),
+                            );
+                          }
+                        },
+                        child: Image.asset(
+                          'assest/image/google.png',
+                          alignment: Alignment.center,
+                          fit: BoxFit.cover, // Fixes border issues
+                          width: 70.0,
+                          height: 70.0,
+                        ),
                       )
                     ],
                   )
