@@ -2,12 +2,13 @@ import 'package:cdio/Calendar.dart';
 import 'package:cdio/Settings.dart';
 import 'package:cdio/Task.dart';
 import 'package:cdio/Todolist_Color.dart';
+import 'package:cdio/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.black,// navigation bar color
     statusBarColor: Colors.transparent,
@@ -16,12 +17,10 @@ void main() {
      // status bar color
   ));
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp();
 
   runApp(MaterialApp(
-    home: Mytodolist(
-      uid: 'uid.toString()',
-    ),
+    home: Login_Screen(),
     debugShowCheckedModeBanner: false,
   ));
 }

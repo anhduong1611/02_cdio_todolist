@@ -19,25 +19,26 @@ class MTask extends StatefulWidget {
 class _MTaskState extends State<MTask> {
   late String uid;
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     Firebase.initializeApp().whenComplete(() {
       print("completed");
       setState(() {});
     });
-    FirebaseAuth.instance
-        .authStateChanges()
-        .listen((User? user) {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user != null) {
-       uid = user.uid;
+        uid = user.uid;
       }
     });
   }
-  List<Task_todo> list = [new Task_todo(date:'20/10/2002', name:'An com di'),new Task_todo(date:'20/11/2002', name: 'Khong an com dau')];
-  final List<String> colors_task = <String>['1','2'];
+
   final db = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
+    CollectionReference recipes = FirebaseFirestore.instance
+        .collection("Users")
+        .doc(uid)
+        .collection('Tasks');
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -72,7 +73,7 @@ class _MTaskState extends State<MTask> {
                   ),
                   IconButton(
                       onPressed: () {},
-                      icon:  const Icon(
+                      icon: const Icon(
                         Icons.search_rounded,
                         size: 30,
                         color: MColor.blue_main,
@@ -85,37 +86,55 @@ class _MTaskState extends State<MTask> {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               Expanded(
-                child: ListView.separated(
-
-                  padding: const EdgeInsets.all(8),
-                  itemCount: list.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ItemsView(
-                      date:list[index].date.toString() ,name: list[index].name.toString(),color: colors_task[index],
-                    );
+                child: StreamBuilder(
+                  stream: recipes.snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return ListView.builder(
+                        itemCount: snapshot.data?.docs.length,
+                        physics: BouncingScrollPhysics(),
+                        padding: EdgeInsets.all(8),
+                        itemBuilder: (BuildContext ctx, int index) {
+                          return ItemsView(
+                              date: snapshot.data?.docs[index].get('date'),
+                              name: snapshot.data?.docs[index].get('name'),
+                              color: index);
+                        },
+                      );
+                    }
                   },
-
-                  separatorBuilder: (BuildContext context, int index) =>
-                      const Divider(),
                 ),
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.large(
-          onPressed: () async {
-            Task_todo task = new Task_todo(date: '20/10/2002',name: 'An com di');
-            final docRef = db
-            .collection('Users').doc(uid)
-                .collection("Tasks")
-                .withConverter(
-              fromFirestore: Task_todo.fromFirestore,
-              toFirestore: (Task_todo city, options) => city.toFirestore(),
-            )
-                .doc("task1");
-            await docRef.set(task);
-            print('dc r ne');
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() async {
+              DateTime time_ran_id = DateTime.now();
+              Task_todo task = new Task_todo(
+                  date: '22/10/2002',
+                  name: 'Khong thich an com dau',
+                  id: time_ran_id.toString());
+              final docRef = db
+                  .collection('Users')
+                  .doc(uid)
+                  .collection("Tasks")
+                  .withConverter(
+                    fromFirestore: Task_todo.fromFirestore,
+                    toFirestore: (Task_todo city, options) =>
+                        city.toFirestore(),
+                  )
+                  .doc(time_ran_id.toString());
+              await docRef.set(task);
+              print('Success add task');
+              //list = docdl() ;
+            });
           },
           backgroundColor: MColor.blue_main,
           child: const Icon(

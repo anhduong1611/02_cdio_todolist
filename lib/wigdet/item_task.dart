@@ -2,7 +2,8 @@ import 'package:cdio/Todolist_Color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 class ItemsView extends StatelessWidget {
-  String date, name,color;
+  String date, name;
+  int color;
 
    ItemsView({Key? key,required this.date,required this.name,required this.color}) : super(key: key);
 
@@ -10,9 +11,10 @@ class ItemsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      margin: EdgeInsets.only(top:20),
       height: 50,
       decoration: BoxDecoration(
-        color : this.color == '1' ? MColor.blue_op: Colors.white,
+        color : this.color % 2 == 0 ? MColor.blue_op: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(100))
       ),
       child: Padding(

@@ -1,13 +1,8 @@
-import 'package:cdio/firebase_options.dart';
+
 import 'package:cdio/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:cdio/Task.dart';
 import 'package:cdio/Todolist_Color.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'main.dart';
 class MRegister extends StatefulWidget {
