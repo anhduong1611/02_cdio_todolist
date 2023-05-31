@@ -1,5 +1,6 @@
 import 'package:cdio/OTask.dart';
 import 'package:cdio/Todolist_Color.dart';
+import 'package:cdio/wigdet/bottomsheet.dart';
 import 'package:cdio/wigdet/item_task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -115,26 +116,38 @@ class _MTaskState extends State<MTask> {
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            setState(() async {
-              DateTime time_ran_id = DateTime.now();
-              Task_todo task = new Task_todo(
-                  date: '22/10/2002',
-                  name: 'Khong thich an com dau',
-                  id: time_ran_id.toString());
-              final docRef = db
-                  .collection('Users')
-                  .doc(uid)
-                  .collection("Tasks")
-                  .withConverter(
-                    fromFirestore: Task_todo.fromFirestore,
-                    toFirestore: (Task_todo city, options) =>
-                        city.toFirestore(),
-                  )
-                  .doc(time_ran_id.toString());
-              await docRef.set(task);
-              print('Success add task');
-              //list = docdl() ;
-            });
+            showModalBottomSheet(
+
+                isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+                backgroundColor: Colors.white,
+                context: context,
+                builder: (BuildContext contexxt) {
+                  return  BottomSheetTask();
+
+                });
+            // setState(() async {
+            //   DateTime time_ran_id = DateTime.now();
+            //   Task_todo task = new Task_todo(
+            //       date: '22/10/2002',
+            //       name: 'Khong thich an com dau',
+            //       id: time_ran_id.toString());
+            //   final docRef = db
+            //       .collection('Users')
+            //       .doc(uid)
+            //       .collection("Tasks")
+            //       .withConverter(
+            //         fromFirestore: Task_todo.fromFirestore,
+            //         toFirestore: (Task_todo city, options) =>
+            //             city.toFirestore(),
+            //       )
+            //       .doc(time_ran_id.toString());
+            //   await docRef.set(task);
+            //   print('Success add task');
+            //   //list = docdl() ;
+            // });
           },
           backgroundColor: MColor.blue_main,
           child: const Icon(
