@@ -36,16 +36,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: ^2.13.0
   firebase_auth: ^4.6.1
-<<<<<<< HEAD
   google_sign_in: ^5.3.3
   foundation_flutter: ^0.2.0
-=======
   flutter_svg: ^2.0.5
   cloud_firestore: ^4.7.1
   calendar_date_picker2: ^0.5.2
   day_night_time_picker: ^1.2.0+2
   intl: ^0.18.1
->>>>>>> develop/feature/task
 
 dev_dependencies:
   flutter_test:
