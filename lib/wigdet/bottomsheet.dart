@@ -72,8 +72,8 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
   Time _time = Time(hour: 11, minute: 30, second: 20);
 
   bool iosStyle = true;
-  String set_date_choose ="";
-  String set_time_reminder ="";
+  String set_date_choose = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
+  String set_time_reminder = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
   late DateTime time_reminder;
 
   final controller_name_Task = TextEditingController();
@@ -113,6 +113,8 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                       duedate: set_date_choose,//DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
                       id: time_ran_id.toString());
                    options.SavetoFireBase(task);
+                   print('date task' + set_date_choose);
+                   print('Date to day'+ DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0).millisecondsSinceEpoch.toString());
                    Navigator.pop(context);
                 },
                 child: Icon(

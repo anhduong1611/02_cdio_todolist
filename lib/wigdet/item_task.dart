@@ -1,20 +1,19 @@
 import 'package:cdio/Todolist_Color.dart';
+import 'package:cdio/database/FireBaseOptions.dart';
 import 'package:cdio/wigdet/AlerDialog.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../OTask.dart';
+
 class ItemsView extends StatefulWidget {
-  String date, name,id;
+  final Task_todo task;
   int color;
-  bool completed;
   ItemsView(
       {Key? key,
-      required this.date,
-      required this.name,
-      required this.color,
-        required this.id,
-      required this.completed})
+      required this.task,
+      required this.color})
       : super(key: key);
 
   @override
@@ -24,6 +23,7 @@ class ItemsView extends StatefulWidget {
 enum Complete { task_complete }
 
 class _ItemsViewState extends State<ItemsView> {
+  FireBaseOptions option = FireBaseOptions();
   Color getColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
       MaterialState.pressed,
@@ -38,9 +38,9 @@ class _ItemsViewState extends State<ItemsView> {
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate = this.widget.date != ""
+    String formattedDate = this.widget.task.date != ""
         ? DateFormat('dd-MM-yyyy').format(
-            DateTime.fromMillisecondsSinceEpoch(int.parse(this.widget.date)))
+            DateTime.fromMillisecondsSinceEpoch(int.parse(this.widget.task.date.toString())))
         : "";
     return Container(
       width: double.infinity,
@@ -61,7 +61,7 @@ class _ItemsViewState extends State<ItemsView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    this.widget.name,
+                    this.widget.task.name.toString(),
                     style: TextStyle(fontSize: 13),
                   ),
                   Text(
@@ -76,10 +76,10 @@ class _ItemsViewState extends State<ItemsView> {
                 Checkbox(
                     checkColor: Colors.white,
                     fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: this.widget.completed,
+                    value: this.widget.task.completed,
                     onChanged: (bool? value) {
                       setState(() {
-                        this.widget.completed = value!;
+                        option.checked_task(this.widget.task.id.toString(), value!);
                       });
                     }),
                 SizedBox(
@@ -95,7 +95,7 @@ class _ItemsViewState extends State<ItemsView> {
                 InkWell(
                   onTap: (){
                     MAlerDialog alert =  MAlerDialog() ;
-                    alert.Alert_delete(context,this.widget.id);
+                    alert.Alert_delete(context,this.widget.task.id.toString());
                   },
                   child: SvgPicture.asset('assets/icons/ic_bin.svg'),
                 )

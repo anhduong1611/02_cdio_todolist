@@ -25,4 +25,10 @@ class FireBaseOptions{
     await docRef.set(task!);
     print('Success add task');
   }
+  void checked_task(String id,bool value){
+    final washingtonRef = db.collection("Users").doc(FirebaseAuth.instance.currentUser?.uid.toString()).collection("Tasks").doc(id);
+    washingtonRef.update({"completed": value}).then(
+            (value) => print("DocumentSnapshot successfully updated!"),
+        onError: (e) => print("Error updating document $e"));
+  }
 }

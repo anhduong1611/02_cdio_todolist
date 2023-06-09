@@ -18,7 +18,7 @@ class MTask extends StatefulWidget {
 }
 
 class _MTaskState extends State<MTask> {
-  late String uid;
+  final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
   @override
   void initState() {
     super.initState();
@@ -26,11 +26,7 @@ class _MTaskState extends State<MTask> {
       print("completed");
       setState(() {});
     });
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user != null) {
-        uid = user.uid;
-      }
-    });
+
   }
 
   final db = FirebaseFirestore.instance;
@@ -88,7 +84,7 @@ class _MTaskState extends State<MTask> {
               ),
               Expanded(
                 child: StreamBuilder(
-                  stream: recipes.snapshots(),
+                  stream: recipes.orderBy('duedate',descending: false).snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
@@ -100,13 +96,26 @@ class _MTaskState extends State<MTask> {
                         physics: BouncingScrollPhysics(),
                         padding: EdgeInsets.all(8),
                         itemBuilder: (BuildContext ctx, int index) {
-                          return ItemsView(
-                              date: snapshot.data?.docs[index].get('date'),
-                              name: snapshot.data?.docs[index].get('name'),
-                              id: snapshot.data?.docs[index].get('id'),
-                              completed:
-                                  snapshot.data?.docs[index].get('completed'),
-                              color: index);
+                           DateTime today = new DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0);
+                          String todat = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
+                           // if(snapshot.data?.docs[index].get('date').toString()== today.millisecondsSinceEpoch.toString()){
+                          //   print('ppp');
+                            Task_todo task = Task_todo(
+                                date: snapshot.data?.docs[index].get('date'),
+                                duedate: snapshot.data?.docs[index].get('duedate'),
+                                name: snapshot.data?.docs[index].get('name'),
+                                id: snapshot.data?.docs[index].get('id'),
+                                completed:
+                                snapshot.data?.docs[index].get('completed'));
+                            if(task.date.toString() == todat)
+                            return ItemsView(
+                                task: task,
+                                color: index);
+                            else
+                              {
+                                if(task.date.toString().compareTo(todat))
+                              }
+
                         },
                       );
                     }
