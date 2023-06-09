@@ -26,7 +26,6 @@ class _MTaskState extends State<MTask> {
       print("completed");
       setState(() {});
     });
-
   }
 
   final db = FirebaseFirestore.instance;
@@ -84,7 +83,8 @@ class _MTaskState extends State<MTask> {
               ),
               Expanded(
                 child: StreamBuilder(
-                  stream: recipes.orderBy('duedate',descending: false).snapshots(),
+                  stream:
+                      recipes.orderBy('duedate', descending: false).snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Center(
@@ -96,26 +96,67 @@ class _MTaskState extends State<MTask> {
                         physics: BouncingScrollPhysics(),
                         padding: EdgeInsets.all(8),
                         itemBuilder: (BuildContext ctx, int index) {
-                           DateTime today = new DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0);
-                          String todat = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
-                           // if(snapshot.data?.docs[index].get('date').toString()== today.millisecondsSinceEpoch.toString()){
+                          DateTime today = new DateTime(
+                              DateTime.now().year,
+                              DateTime.now().month,
+                              DateTime.now().day,
+                              0,
+                              0,
+                              0,
+                              0);
+                          String todat = DateTime(
+                                  DateTime.now().year,
+                                  DateTime.now().month,
+                                  DateTime.now().day,
+                                  0,
+                                  0,
+                                  0,
+                                  0)
+                              .millisecondsSinceEpoch
+                              .toString();
+                          // if(snapshot.data?.docs[index].get('date').toString()== today.millisecondsSinceEpoch.toString()){
                           //   print('ppp');
-                            Task_todo task = Task_todo(
-                                date: snapshot.data?.docs[index].get('date'),
-                                duedate: snapshot.data?.docs[index].get('duedate'),
-                                name: snapshot.data?.docs[index].get('name'),
-                                id: snapshot.data?.docs[index].get('id'),
-                                completed:
-                                snapshot.data?.docs[index].get('completed'));
-                            if(task.date.toString() == todat)
-                            return ItemsView(
-                                task: task,
-                                color: index);
-                            else
-                              {
-                                if(task.date.toString().compareTo(todat))
-                              }
+                          Task_todo task = Task_todo(
+                              date: snapshot.data?.docs[index].get('date'),
+                              duedate:
+                                  snapshot.data?.docs[index].get('duedate'),
+                              name: snapshot.data?.docs[index].get('name'),
+                              id: snapshot.data?.docs[index].get('id'),
+                              completed:
+                                  snapshot.data?.docs[index].get('completed'));
+                          bool isTitle = true;
+                          String text = "";
+                          if( (index + 1) >= snapshot.data!.docs.length.toInt() )
+                            text ="";
+                          else if (task.duedate.toString() == todat.toString() &&
+                              snapshot.data?.docs[index - 1]
+                                      .get('duedate')
+                                      .toString() !=
+                                  todat) {
+                            text = "Today";
+                          } else if (task.duedate.toString().compareTo(todat.toString())>0 &&(snapshot.data?.docs[index + 1]
+                              .get('duedate')
+                              .toString())?.compareTo(todat) == 1) {
+                            text = "Future";
 
+                          }
+                          else if (task.duedate.toString().compareTo(todat.toString())<0&&index == 0 ) {
+                            text = "Perivious";
+                          }
+                          else
+                            text = "";
+                          return Column(
+                            children: [
+                              Visibility(
+                                child: Text(text),
+                                visible: text == ""?false:true,
+                              ),
+                              ItemsView(
+                                task: task,
+                                color: index,
+                              ),
+                            ],
+                          );
                         },
                       );
                     }

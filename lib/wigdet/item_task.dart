@@ -39,9 +39,10 @@ class _ItemsViewState extends State<ItemsView> {
   @override
   Widget build(BuildContext context) {
     String formattedDate = this.widget.task.date != ""
-        ? DateFormat('dd-MM-yyyy').format(
-            DateTime.fromMillisecondsSinceEpoch(int.parse(this.widget.task.date.toString())))
+        ? DateFormat('dd-MM-yyyy').format(DateTime.fromMillisecondsSinceEpoch(
+            int.parse(this.widget.task.date.toString())))
         : "";
+
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(top: 20),
@@ -79,7 +80,9 @@ class _ItemsViewState extends State<ItemsView> {
                     value: this.widget.task.completed,
                     onChanged: (bool? value) {
                       setState(() {
-                        option.checked_task(this.widget.task.id.toString(), value!);
+                        print('checked'+this.widget.task.id.toString());
+                        option.checked_task(
+                            this.widget.task.id.toString(), value!);
                       });
                     }),
                 SizedBox(
@@ -87,15 +90,18 @@ class _ItemsViewState extends State<ItemsView> {
                 ),
                 InkWell(
                   child: SvgPicture.asset('assets/icons/ic_edit.svg'),
-                )
-                ,
+                  onTap: (){
+                    print('checked'+this.widget.task.id.toString());
+                  },
+                ),
                 SizedBox(
                   width: 20,
                 ),
                 InkWell(
-                  onTap: (){
-                    MAlerDialog alert =  MAlerDialog() ;
-                    alert.Alert_delete(context,this.widget.task.id.toString());
+                  onTap: () {
+                    MAlerDialog alert = MAlerDialog();
+                    alert.Alert_delete(
+                        context, this.widget.task.id.toString());
                   },
                   child: SvgPicture.asset('assets/icons/ic_bin.svg'),
                 )
