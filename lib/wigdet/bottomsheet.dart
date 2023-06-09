@@ -1,3 +1,4 @@
+import 'package:cdio/database/FireBaseOptions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,41 @@ class BottomSheetTask extends StatefulWidget {
 }
 
 class _BottomSheetTaskState extends State<BottomSheetTask> {
-  final db = FirebaseFirestore.instance;
+  List<DateTime?> _dialogCalendarPickerValue = [
+    DateTime.now(),
+    DateTime.now(),
+  ];
+  final FireBaseOptions options = new FireBaseOptions();
+  String _getValueText(
+      CalendarDatePicker2Type datePickerType,
+      List<DateTime?> values,
+      ) {
+    values =
+        values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
+    var valueText = (values.isNotEmpty ? values[0] : null)
+        .toString()
+        .replaceAll('00:00:00.000', '');
 
+    if (datePickerType == CalendarDatePicker2Type.multi) {
+      valueText = values.isNotEmpty
+          ? values
+          .map((v) => v.toString().replaceAll('00:00:00.000', ''))
+          .join(', ')
+          : 'null';
+    } else if (datePickerType == CalendarDatePicker2Type.range) {
+      if (values.isNotEmpty) {
+        final startDate = values[0].toString().replaceAll('00:00:00.000', '');
+        final endDate = values.length > 1
+            ? values[1].toString().replaceAll('00:00:00.000', '')
+            : 'null';
+        valueText = '$startDate to $endDate';
+      } else {
+        return 'null';
+      }
+    }
+
+    return valueText;
+  }
   final config = CalendarDatePicker2WithActionButtonsConfig(
       dayTextStyle: BottomSheetTask.dayTextStyle,
       calendarType: CalendarDatePicker2Type.range,
@@ -38,15 +72,14 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
   Time _time = Time(hour: 11, minute: 30, second: 20);
 
   bool iosStyle = true;
-
+  String set_date_choose ="";
+  String set_time_reminder ="";
   late DateTime time_reminder;
 
   final controller_name_Task = TextEditingController();
-
   void onTimeChanged(Time newTime) {
       _time = newTime;
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -70,24 +103,16 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                 ),
               ),
               InkWell(
-                onTap: () async {
+                onTap: ()  {
                   DateTime time_ran_id = DateTime.now();
-                    Task_todo task = new Task_todo(
-                        date: controller_name_Task.text,
-                        name: controller_name_Task.text,
-                        id: time_ran_id.toString());
-                    final docRef = db
-                        .collection('Users')
-                        .doc(FirebaseAuth.instance.currentUser?.uid.toString())
-                        .collection("Tasks")
-                        .withConverter(
-                          fromFirestore: Task_todo.fromFirestore,
-                          toFirestore: (Task_todo city, options) =>
-                              city.toFirestore(),
-                        )
-                        .doc(time_ran_id.toString());
-                    await docRef.set(task);
-                    print('Success add task');
+                  Task_todo task =  Task_todo(
+                      date: set_date_choose,
+                      name: controller_name_Task.text,
+                      reminder: set_time_reminder,
+                      completed: false,
+                      duedate: set_date_choose,//DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
+                      id: time_ran_id.toString());
+                   options.SavetoFireBase(task);
                    Navigator.pop(context);
                 },
                 child: Icon(
@@ -115,10 +140,21 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                   )
                 )),
               InkWell(
-                onTap: (){
-                  showCalendarDatePicker2Dialog(context: context, config: config, dialogSize: const Size(325, 400),);
+                onTap: () async {
+                  final values = await showCalendarDatePicker2Dialog(context: context, config: config, dialogSize: const Size(325, 400),value: _dialogCalendarPickerValue);
+                  if (values != null) {
+                    // ignore: avoid_print
+                    print(_getValueText(
+                      config.calendarType,
+                      values,
+                    ));
+                    setState(() {
+                      _dialogCalendarPickerValue = values;
+                      set_date_choose = _dialogCalendarPickerValue[0]!.millisecondsSinceEpoch.toString();
+                      });
+                  }
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.calendar_month_rounded,
                   color: MColor.blue_main,
                   size: 35,
@@ -141,10 +177,8 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                       onChangeDateTime: (DateTime dateTime)  {
                           setState(() {
                             time_reminder = dateTime;
+                            set_time_reminder = time_reminder.toString();
                           });
-
-                        print(time_reminder);
-                        debugPrint("[debug datetime]:  $dateTime");
                       },
                     ),
                   );
@@ -162,47 +196,5 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
     );
   }
 }
-void showCustomDialog(BuildContext context) {
-  showGeneralDialog(
-    context: context,
-    barrierLabel: "Barrier",
-    barrierDismissible: true,
-    barrierColor: Colors.black.withOpacity(0.5),
-    transitionDuration: Duration(milliseconds: 200),
-    pageBuilder: (_, __, ___) {
-      return Center(
-        child: Container(
-          height: 240,
-          width: double.infinity,
-          padding: EdgeInsets.all(30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Set Time',style: TextStyle(decoration: TextDecoration.none,color: Colors.black,fontSize: 14))
 
-            ],
-          ),
-          margin: EdgeInsets.symmetric(horizontal: 20),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-        ),
-      );
-    },
-    transitionBuilder: (_, anim, __, child) {
-      Tween<Offset> tween;
-      if (anim.status == AnimationStatus.reverse) {
-        tween = Tween(begin: Offset(-1, 0), end: Offset.zero);
-      } else {
-        tween = Tween(begin: Offset(1, 0), end: Offset.zero);
-      }
-
-      return SlideTransition(
-        position: tween.animate(anim),
-        child: FadeTransition(
-          opacity: anim,
-          child: child,
-        ),
-      );
-    },
-  );
-}
 
