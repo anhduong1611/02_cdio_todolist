@@ -8,4 +8,5 @@ class MColor {
   static const notype = Color(0x4FFFFFFF);
   static const grey_text = Color(0xFFD9D9D9);
   static const cancel_text = Color(0x8A50C2C9);
+  static const duedate = Color(0x2e50c2c9);
 }

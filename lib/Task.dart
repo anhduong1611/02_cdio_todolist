@@ -126,25 +126,19 @@ class _MTaskState extends State<MTask> {
                                   snapshot.data?.docs[index].get('completed'));
                           bool isTitle = true;
                           String text = "";
-                          if( (index + 1) >= snapshot.data!.docs.length.toInt() )
-                            text ="";
-                          else if (task.duedate.toString() == todat.toString() &&
-                              snapshot.data?.docs[index - 1]
-                                      .get('duedate')
-                                      .toString() !=
-                                  todat) {
-                            text = "Today";
-                          } else if (task.duedate.toString().compareTo(todat.toString())>0 &&(snapshot.data?.docs[index + 1]
-                              .get('duedate')
-                              .toString())?.compareTo(todat) == 1) {
-                            text = "Future";
-
-                          }
-                          else if (task.duedate.toString().compareTo(todat.toString())<0&&index == 0 ) {
-                            text = "Perivious";
-                          }
-                          else
-                            text = "";
+                          // if( (index + 1) >= snapshot.data!.docs.length.toInt() )
+                          //   text ="";
+                          // else if (task.duedate.toString() == todat.toString()) {
+                          //   text = "Today";
+                          // } else if (task.duedate.toString().compareTo(todat.toString())>0) {
+                          //   text = "Future";
+                          //
+                          // }
+                          // else if (task.duedate.toString().compareTo(todat.toString())<0&&index == 0 ) {
+                          //   text = "Perivious";
+                          // }
+                          // else
+                          //   text = "";
                           return Column(
                             children: [
                               Visibility(

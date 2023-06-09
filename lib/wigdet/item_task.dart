@@ -1,3 +1,4 @@
+import 'package:cdio/Screen/update_screen.dart';
 import 'package:cdio/Todolist_Color.dart';
 import 'package:cdio/database/FireBaseOptions.dart';
 import 'package:cdio/wigdet/AlerDialog.dart';
@@ -91,7 +92,7 @@ class _ItemsViewState extends State<ItemsView> {
                 InkWell(
                   child: SvgPicture.asset('assets/icons/ic_edit.svg'),
                   onTap: (){
-                    print('checked'+this.widget.task.id.toString());
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MUpdateScreen(task_todo: this.widget.task,)));
                   },
                 ),
                 SizedBox(
