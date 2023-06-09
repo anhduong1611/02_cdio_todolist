@@ -1,25 +1,26 @@
 import 'package:cdio/Calendar.dart';
 import 'package:cdio/Settings.dart';
 import 'package:cdio/Task.dart';
-import 'package:cdio/login_screen.dart';
-import 'package:cdio/splash_screen.dart';
 import 'package:cdio/Todolist_Color.dart';
-import 'package:cdio/firebase_options.dart';
+import 'package:cdio/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'firebase_options.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:molten_navigationbar_flutter/molten_navigationbar_flutter.dart';
-
-import 'Register.dart';
-
-late bool check_user;
-void main() {
+void main() async {
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.black,// navigation bar color
+    statusBarColor: Colors.transparent,
+     statusBarBrightness: Brightness.dark,
+     statusBarIconBrightness: Brightness.dark,
+     // status bar color
+  ));
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp();
 
   runApp(MaterialApp(
-    home: splash_screen(),
+    home: Login_Screen(),
     debugShowCheckedModeBanner: false,
   ));
 }
@@ -39,16 +40,25 @@ class _MytodolistState extends State<Mytodolist> {
     MCalendar(),
     MSettings(),
   ];
+  // List
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: MColor.grey_background,
-      body: Center(
-        child: SingleChildScrollView(
-          child: _widgetOptions.elementAt(_selectedIndex),
-        ),
-      ),
+      body:   Container(
+        width: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              alignment: Alignment.topLeft,
+              image: AssetImage('assets/image/shape_top.png'),
+            )
+          ),
+          child: Container(child: _widgetOptions.elementAt(_selectedIndex))),
+
+      //floatingActionButton: FloatingActionButton.large(onPressed: (){},child: Icon(Icons.add,size: 40,),backgroundColor: MColor.blue_main,),
       bottomNavigationBar: MoltenBottomNavigationBar(
+
         domeCircleColor: MColor.blue_main,
         selectedIndex: _selectedIndex,
         onTabChange: (clickedIndex) {
@@ -71,37 +81,3 @@ class _MytodolistState extends State<Mytodolist> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
