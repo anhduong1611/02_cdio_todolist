@@ -7,7 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
+import 'package:grouped_list/grouped_list.dart';
 const kDefaultPadding = 20.0;
 
 class MTask extends StatefulWidget {
@@ -77,85 +78,77 @@ class _MTaskState extends State<MTask> {
                 ],
               ),
               const SizedBox(height: kDefaultPadding * 1.5),
-              const Text(
-                'TODAY',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
               Expanded(
                 child: StreamBuilder(
-                  stream:
-                      recipes.orderBy('duedate', descending: false).snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return ListView.builder(
-                        itemCount: snapshot.data?.docs.length,
-                        physics: BouncingScrollPhysics(),
-                        padding: EdgeInsets.all(8),
-                        itemBuilder: (BuildContext ctx, int index) {
-                          DateTime today = new DateTime(
-                              DateTime.now().year,
-                              DateTime.now().month,
-                              DateTime.now().day,
-                              0,
-                              0,
-                              0,
-                              0);
-                          String todat = DateTime(
-                                  DateTime.now().year,
-                                  DateTime.now().month,
-                                  DateTime.now().day,
-                                  0,
-                                  0,
-                                  0,
-                                  0)
-                              .millisecondsSinceEpoch
-                              .toString();
-                          // if(snapshot.data?.docs[index].get('date').toString()== today.millisecondsSinceEpoch.toString()){
-                          //   print('ppp');
-                          Task_todo task = Task_todo(
-                              date: snapshot.data?.docs[index].get('date'),
-                              duedate:
-                                  snapshot.data?.docs[index].get('duedate'),
-                              name: snapshot.data?.docs[index].get('name'),
-                              id: snapshot.data?.docs[index].get('id'),
-                              completed:
-                                  snapshot.data?.docs[index].get('completed'));
-                          bool isTitle = true;
-                          String text = "";
-                          // if( (index + 1) >= snapshot.data!.docs.length.toInt() )
-                          //   text ="";
-                          // else if (task.duedate.toString() == todat.toString()) {
-                          //   text = "Today";
-                          // } else if (task.duedate.toString().compareTo(todat.toString())>0) {
-                          //   text = "Future";
-                          //
-                          // }
-                          // else if (task.duedate.toString().compareTo(todat.toString())<0&&index == 0 ) {
-                          //   text = "Perivious";
-                          // }
-                          // else
-                          //   text = "";
-                          return Column(
-                            children: [
-                              Visibility(
-                                child: Text(text),
-                                visible: text == ""?false:true,
-                              ),
-                              ItemsView(
-                                task: task,
-                                color: index,
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  },
-                ),
+                    stream: recipes
+                        .orderBy('duedate', descending: false)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return ListView.builder(
+                            itemCount: snapshot.data?.docs.length,
+                            physics: BouncingScrollPhysics(),
+                            padding: EdgeInsets.all(8),
+                            itemBuilder: (BuildContext ctx, int index) {
+                              Task_todo task = Task_todo(
+                                  date: snapshot.data?.docs[index].get('date'),
+                                  duedate: snapshot.data?.docs[index].get('duedate'),
+                                  name: snapshot.data?.docs[index].get('name'),
+                                  id: snapshot.data?.docs[index].get('id'),
+                                  completed: snapshot.data?.docs[index].get('completed'));
+                              bool isSameDate = true;
+                              DateTime today = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0);
+                              final String dateString =
+                                  snapshot.data?.docs[index].get('duedate');
+                              String date_to_view = DateFormat('dd-MM-yyyy')
+                                  .format(DateTime.fromMillisecondsSinceEpoch(
+                                      int.parse(dateString.toString())));
+                              if (index == 0) {
+                                isSameDate = false;
+                              } else {
+                                final String prevDateString = snapshot
+                                    .data?.docs[index - 1]
+                                    .get('duedate');
+                                if (dateString == prevDateString)
+                                  isSameDate = true;
+                                else
+                                  isSameDate = false;
+                              }
+                              if ((index == 0 || !(isSameDate))&& dateString == today.millisecondsSinceEpoch.toString()  ) {
+                                return Column(children: [
+                                  Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(dateString != today.millisecondsSinceEpoch.toString()?date_to_view:"TODAY")),
+                                  ItemsView(
+                                    task: task,
+                                    color: index,
+                                  )
+                                ]);
+                              }
+                              else if ((index == 0 || !(isSameDate))&& dateString.compareTo(today.millisecondsSinceEpoch.toString()) == 1) {
+                                return Column(children: [
+                                  Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text("Future")),
+                                  ItemsView(
+                                    task: task,
+                                    color: index,
+                                  )
+                                ]);
+                              }
+                              else {
+                                return ItemsView(
+                                  task: task,
+                                  color: index,
+                                );
+                              }
+                            });
+                      }
+                    }),
               ),
             ],
           ),
@@ -179,5 +172,25 @@ class _MTaskState extends State<MTask> {
             Icons.add,
           )),
     );
+  }
+}
+
+const String dateFormatter = 'MMMM dd, y';
+
+extension DateHelper on DateTime {
+  String formatDate() {
+    final formatter = DateFormat(dateFormatter);
+    return formatter.format(this);
+  }
+
+  bool isSameDate(DateTime other) {
+    return this.year == other.year &&
+        this.month == other.month &&
+        this.day == other.day;
+  }
+
+  int getDifferenceInDaysWithNow() {
+    final now = DateTime.now();
+    return now.difference(this).inDays;
   }
 }
