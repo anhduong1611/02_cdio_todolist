@@ -9,6 +9,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:grouped_list/grouped_list.dart';
+
+import 'database/FireBaseOptions.dart';
+
 const kDefaultPadding = 20.0;
 
 class MTask extends StatefulWidget {
@@ -20,6 +23,7 @@ class MTask extends StatefulWidget {
 
 class _MTaskState extends State<MTask> {
   final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
+  FireBaseOptions options = FireBaseOptions();
   @override
   void initState() {
     super.initState();
@@ -27,6 +31,7 @@ class _MTaskState extends State<MTask> {
       print("completed");
       setState(() {});
     });
+    //options.readdata();
   }
 
   final db = FirebaseFirestore.instance;
@@ -77,7 +82,7 @@ class _MTaskState extends State<MTask> {
                       ))
                 ],
               ),
-              const SizedBox(height: kDefaultPadding * 1.5),
+              const SizedBox(height: 10),
               Expanded(
                 child: StreamBuilder(
                     stream: recipes
@@ -89,64 +94,40 @@ class _MTaskState extends State<MTask> {
                           child: CircularProgressIndicator(),
                         );
                       } else {
-                        return ListView.builder(
-                            itemCount: snapshot.data?.docs.length,
-                            physics: BouncingScrollPhysics(),
-                            padding: EdgeInsets.all(8),
-                            itemBuilder: (BuildContext ctx, int index) {
-                              Task_todo task = Task_todo(
-                                  date: snapshot.data?.docs[index].get('date'),
-                                  duedate: snapshot.data?.docs[index].get('duedate'),
-                                  name: snapshot.data?.docs[index].get('name'),
-                                  id: snapshot.data?.docs[index].get('id'),
-                                  completed: snapshot.data?.docs[index].get('completed'));
-                              bool isSameDate = true;
-                              DateTime today = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0);
-                              final String dateString =
-                                  snapshot.data?.docs[index].get('duedate');
-                              String date_to_view = DateFormat('dd-MM-yyyy')
-                                  .format(DateTime.fromMillisecondsSinceEpoch(
-                                      int.parse(dateString.toString())));
-                              if (index == 0) {
-                                isSameDate = false;
-                              } else {
-                                final String prevDateString = snapshot
-                                    .data?.docs[index - 1]
-                                    .get('duedate');
-                                if (dateString == prevDateString)
-                                  isSameDate = true;
-                                else
-                                  isSameDate = false;
-                              }
-                              if ((index == 0 || !(isSameDate))&& dateString == today.millisecondsSinceEpoch.toString()  ) {
-                                return Column(children: [
-                                  Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Text(dateString != today.millisecondsSinceEpoch.toString()?date_to_view:"TODAY")),
-                                  ItemsView(
-                                    task: task,
-                                    color: index,
-                                  )
-                                ]);
-                              }
-                              else if ((index == 0 || !(isSameDate))&& dateString.compareTo(today.millisecondsSinceEpoch.toString()) == 1) {
-                                return Column(children: [
-                                  Align(
-                                      alignment: Alignment.topLeft,
-                                      child: Text("Future")),
-                                  ItemsView(
-                                    task: task,
-                                    color: index,
-                                  )
-                                ]);
-                              }
-                              else {
-                                return ItemsView(
-                                  task: task,
-                                  color: index,
-                                );
-                              }
-                            });
+                        return GroupedListView<dynamic, String>(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.all(0),
+                          sort: false,
+                          elements: snapshot.data!.docs,
+                          groupBy: (element) => element['state'],
+                          groupSeparatorBuilder: (String value) => Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Text(
+                                value,
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ),
+                          useStickyGroupSeparators: false,
+                          floatingHeader: true,
+                          indexedItemBuilder:
+                              (context, dynamic element, index) {
+                            options.update_state_task(
+                                element.get('id'), element.get('duedate'));
+                            Task_todo task = Task_todo(
+                                date: element.get('date'),
+                                duedate: element.get('duedate'),
+                                name: element.get('name'),
+                                id: element.get('id'),
+                                state: element.get('state'),
+                                completed: element.get('completed'));
+                            return ItemsView(task: task, color: index);
+                          },
+                        );
                       }
                     }),
               ),

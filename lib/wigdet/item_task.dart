@@ -39,9 +39,9 @@ class _ItemsViewState extends State<ItemsView> {
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate = this.widget.task.date != ""
+    String formattedDate = this.widget.task.duedate != ""
         ? DateFormat('dd-MM-yyyy').format(DateTime.fromMillisecondsSinceEpoch(
-            int.parse(this.widget.task.date.toString())))
+            int.parse(this.widget.task.duedate.toString())))
         : "";
 
     return Container(
@@ -64,6 +64,8 @@ class _ItemsViewState extends State<ItemsView> {
                 children: [
                   Text(
                     this.widget.task.name.toString(),
+                    maxLines: 1,
+
                     style: TextStyle(fontSize: 13),
                   ),
                   Text(

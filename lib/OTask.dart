@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Task_todo{
-  final String ? date;
-  final String ? duedate;
+   String ? date;
+   String ? duedate;
   final bool ? completed;
   final String ? reminder;
-  final String ? name;
+  late String ? name;
   final String ? id;
+  final String ? state;
 
-  Task_todo({this.duedate, this.completed, this.reminder, this.date, this.name,this.id});
+
+  Task_todo({this.duedate, this.completed, this.reminder, this.date, this.name,this.id, this.state});
 
   factory Task_todo.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -17,6 +19,7 @@ class Task_todo{
     final data = snapshot.data();
     return Task_todo(
       date: data?['date'],
+      state: data?['state'],
       name: data?['name'],
       id: data?['id'],
       completed:  data?['completed'],
@@ -33,7 +36,7 @@ class Task_todo{
       if (reminder != null) "reminder": reminder,
       if (duedate != null) "duedate": duedate,
       if (id != null) "id": id,
-
+      if (state != null) "state": state,
     };
   }
 }

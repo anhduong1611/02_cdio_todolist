@@ -73,6 +73,7 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
 
   bool iosStyle = true;
   String set_date_choose = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
+  String set_duedate_choose = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
   String set_time_reminder = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
   late DateTime time_reminder;
 
@@ -97,7 +98,7 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
               Expanded(
                 child: TextField(
                   controller: controller_name_Task,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: 'Input new task here',
                       border: OutlineInputBorder(borderSide: BorderSide.none)),
                 ),
@@ -110,14 +111,16 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                       name: controller_name_Task.text,
                       reminder: set_time_reminder,
                       completed: false,
-                      duedate: set_date_choose,//DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
+                      state: options.setStatetask(set_duedate_choose),
+                      duedate: set_duedate_choose,//DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
                       id: time_ran_id.toString());
                    options.SavetoFireBase(task);
+                   options.update_state_task(time_ran_id.toString(), set_duedate_choose);
                    print('date task' + set_date_choose);
                    print('Date to day'+ DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0).millisecondsSinceEpoch.toString());
                    Navigator.pop(context);
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.add,
                   color: MColor.blue_main,
                   size: 40,
@@ -133,11 +136,11 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                 child: Container(
                   height: 30,
                   width: 100,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: MColor.grey_background,
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text('No type',style: TextStyle(color: MColor.grey_text),),
                   )
                 )),
@@ -145,7 +148,6 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                 onTap: () async {
                   final values = await showCalendarDatePicker2Dialog(context: context, config: config, dialogSize: const Size(325, 400),value: _dialogCalendarPickerValue);
                   if (values != null) {
-                    // ignore: avoid_print
                     print(_getValueText(
                       config.calendarType,
                       values,
@@ -153,6 +155,7 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                     setState(() {
                       _dialogCalendarPickerValue = values;
                       set_date_choose = _dialogCalendarPickerValue[0]!.millisecondsSinceEpoch.toString();
+                      set_duedate_choose = _dialogCalendarPickerValue[1]!.millisecondsSinceEpoch.toString();
                       });
                   }
                 },
@@ -185,7 +188,7 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                     ),
                   );
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.add_alert_rounded,
                   color: MColor.red_main,
                   size: 35,
