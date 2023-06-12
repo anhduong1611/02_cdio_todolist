@@ -78,6 +78,7 @@ class _ItemsViewState extends State<ItemsView> {
             Row(
               children: [
                 Checkbox(
+
                     checkColor: Colors.white,
                     fillColor: MaterialStateProperty.resolveWith(getColor),
                     value: this.widget.task.completed,

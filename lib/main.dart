@@ -19,11 +19,42 @@ void main() async {
   ));
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  runApp(MaterialApp(
-    home: Login_Screen(),
+  runApp(
+      MaterialApp(
+    home: Home(),
     debugShowCheckedModeBanner: false,
   ));
+}
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  Future<FirebaseApp> _initializeFirebase() async {
+    FirebaseApp firebaseApp = await Firebase.initializeApp();
+    return firebaseApp;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return   Scaffold(
+      backgroundColor: Color.fromARGB(253, 230, 243, 246),
+      body: FutureBuilder(
+        future: _initializeFirebase(),
+        builder: (BuildContext context, AsyncSnapshot<FirebaseApp> snapshot) {
+          if (FirebaseAuth.instance.currentUser == null) {
+            return login_screen();
+          }
+          return  Center(
+            child: Mytodolist(uid: FirebaseAuth.instance.currentUser!.uid.toString()),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class Mytodolist extends StatefulWidget {
