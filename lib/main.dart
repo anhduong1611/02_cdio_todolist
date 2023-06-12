@@ -21,6 +21,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(
       MaterialApp(
+
     home: Home(),
     debugShowCheckedModeBanner: false,
   ));
@@ -41,6 +42,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return   Scaffold(
+      resizeToAvoidBottomInset : false,
       backgroundColor: Color.fromARGB(253, 230, 243, 246),
       body: FutureBuilder(
         future: _initializeFirebase(),
@@ -79,6 +81,7 @@ class _MytodolistState extends State<Mytodolist> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+
       backgroundColor: MColor.grey_background,
       body:   Container(
         width: double.infinity,

@@ -11,10 +11,7 @@ import '../OTask.dart';
 class ItemsView extends StatefulWidget {
   final Task_todo task;
   int color;
-  ItemsView(
-      {Key? key,
-      required this.task,
-      required this.color})
+  ItemsView({Key? key, required this.task, required this.color})
       : super(key: key);
 
   @override
@@ -65,7 +62,6 @@ class _ItemsViewState extends State<ItemsView> {
                   Text(
                     this.widget.task.name.toString(),
                     maxLines: 1,
-
                     style: TextStyle(fontSize: 13),
                   ),
                   Text(
@@ -78,13 +74,17 @@ class _ItemsViewState extends State<ItemsView> {
             Row(
               children: [
                 Checkbox(
-
+                    side:
+                    BorderSide(color: Colors.transparent),
+                    activeColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                     checkColor: Colors.white,
                     fillColor: MaterialStateProperty.resolveWith(getColor),
                     value: this.widget.task.completed,
                     onChanged: (bool? value) {
                       setState(() {
-                        print('checked'+this.widget.task.id.toString());
+                        print('checked' + this.widget.task.id.toString());
                         option.checked_task(
                             this.widget.task.id.toString(), value!);
                       });
@@ -94,8 +94,13 @@ class _ItemsViewState extends State<ItemsView> {
                 ),
                 InkWell(
                   child: SvgPicture.asset('assets/icons/ic_edit.svg'),
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MUpdateScreen(task_todo: this.widget.task,)));
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MUpdateScreen(
+                                  task_todo: this.widget.task,
+                                )));
                   },
                 ),
                 SizedBox(
@@ -104,8 +109,7 @@ class _ItemsViewState extends State<ItemsView> {
                 InkWell(
                   onTap: () {
                     MAlerDialog alert = MAlerDialog();
-                    alert.Alert_delete(
-                        context, this.widget.task.id.toString());
+                    alert.Alert_delete(context, this.widget.task.id.toString());
                   },
                   child: SvgPicture.asset('assets/icons/ic_bin.svg'),
                 )
