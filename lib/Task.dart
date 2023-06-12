@@ -94,40 +94,47 @@ class _MTaskState extends State<MTask> {
                           child: CircularProgressIndicator(),
                         );
                       } else {
-                        return GroupedListView<dynamic, String>(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.all(0),
-                          sort: false,
-                          elements: snapshot.data!.docs,
-                          groupBy: (element) => element['state'],
-                          groupSeparatorBuilder: (String value) => Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Text(
-                                value,
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
-                              ),
-                            )
-                          ),
-                          useStickyGroupSeparators: false,
-                          floatingHeader: true,
-                          indexedItemBuilder:
-                              (context, dynamic element, index) {
-                            options.update_state_task(
-                                element.get('id'), element.get('duedate'));
-                            Task_todo task = Task_todo(
-                                date: element.get('date'),
-                                duedate: element.get('duedate'),
-                                name: element.get('name'),
-                                id: element.get('id'),
-                                state: element.get('state'),
-                                completed: element.get('completed'));
-                            return ItemsView(task: task, color: index);
-                          },
-                        );
+                       if(snapshot.data!.docs.length==0){
+                         return Center(
+                           child: Image.asset('assets/image/empty_task.png'),
+                         );
+                       }
+                       else{
+                         return GroupedListView<dynamic, String>(
+                           shrinkWrap: true,
+                           padding: EdgeInsets.all(0),
+                           sort: false,
+                           elements: snapshot.data!.docs,
+                           groupBy: (element) => element['state'],
+                           groupSeparatorBuilder: (String value) => Padding(
+                               padding: const EdgeInsets.all(10.0),
+                               child: Padding(
+                                 padding: EdgeInsets.only(top: 10),
+                                 child: Text(
+                                   value,
+                                   textAlign: TextAlign.left,
+                                   style: const TextStyle(
+                                       fontSize: 14, fontWeight: FontWeight.bold),
+                                 ),
+                               )
+                           ),
+                           useStickyGroupSeparators: false,
+                           floatingHeader: true,
+                           indexedItemBuilder:
+                               (context, dynamic element, index) {
+                             options.update_state_task(
+                                 element.get('id'), element.get('duedate'));
+                             Task_todo task = Task_todo(
+                                 date: element.get('date'),
+                                 duedate: element.get('duedate'),
+                                 name: element.get('name'),
+                                 id: element.get('id'),
+                                 state: element.get('state'),
+                                 completed: element.get('completed'));
+                             return ItemsView(task: task, color: index);
+                           },
+                         );
+                       }
                       }
                     }),
               ),
