@@ -1,6 +1,8 @@
+import 'package:cdio/Todolist_Color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'main.dart';
 void main() async {
@@ -47,170 +49,82 @@ class login_screen extends StatefulWidget {
 }
 
 class _login_screenState extends State<login_screen> {
-  //Function login
-  static Future<User?> loginUsingEmailPassword({required String email,required String password,required BuildContext context}) async{
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user;
-    try{
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
-      user = userCredential.user;
 
-    }on FirebaseAuthException catch(e) {
-      if(e.code == "user-not-found") {
-        print('No user found fo that email');
-      }
-    }
-    return user;
+  //google gmail
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
   @override
   Widget build(BuildContext context) {
-    TextEditingController _emailController = TextEditingController();
-    TextEditingController _passwordController = TextEditingController();
-    return SingleChildScrollView(
-      child: Stack(
-        children: [
-          Image.asset('assets/image/shape.png'),
-          Padding(
-            padding: const EdgeInsets.only(top: 120),
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Welcome back',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                  ),
-                  Image.asset('assets/image/logo_login.png',
-                      alignment: Alignment.center),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  new Container(
-                      margin: const EdgeInsets.only(
-                          left: 30.0, top: 60.0, right: 30.0),
-                      height: 40.0,
-                      decoration: new BoxDecoration(
-                          color: Color.fromARGB(255, 237, 233, 233),
-                          borderRadius:
-                              new BorderRadius.all(new Radius.circular(25.7))),
-                      child: new Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: new TextField(
-                            
-                            keyboardType: TextInputType.emailAddress,
-                            controller: _emailController,
-                            autofocus: false,
-                            style: new TextStyle(
-                                fontSize: 13.0, color: Colors.black),
-                            decoration: new InputDecoration(
-                              filled: true,
-                              fillColor: Colors
-                                  .white, //chinh backgroud color cho Text Field
-                              hintText: 'Enter your Email',
-                              contentPadding: const EdgeInsets.only(
-                                  left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.white),
-                                borderRadius: new BorderRadius.circular(25.7),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.white),
-                                borderRadius: new BorderRadius.circular(25.7),
-                              ),
-                            ),
-                          ))),
-                  new Container(
-                      margin: const EdgeInsets.only(
-                          left: 30.0, top: 30.0, right: 30.0),
-                      height: 40.0,
-                      decoration: new BoxDecoration(
-                          color: Color.fromARGB(255, 237, 233, 233),
-                          borderRadius:
-                              new BorderRadius.all(new Radius.circular(25.7))),
-                      child: new Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: new TextField(
-                            obscureText: true,
-                            obscuringCharacter: "*",
-                            controller: _passwordController,
-                            autofocus: false,
-                            style: new TextStyle(
-                                fontSize: 13.0, color: Colors.black),
-                            decoration: new InputDecoration(
-                              filled: true,
-                              fillColor: Colors
-                                  .white, //chinh backgroud color cho Text Field
-                              hintText: 'Enter Password',
-                              contentPadding: const EdgeInsets.only(
-                                  left: 14.0, bottom: 8.0, top: 8.0),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.white),
-                                borderRadius: new BorderRadius.circular(25.7),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: new BorderSide(color: Colors.white),
-                                borderRadius: new BorderRadius.circular(25.7),
-                              ),
-                            ),
-                          ))),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Text(
-                    'Forget password ?',
-                    style: TextStyle(
-                        fontSize: 13, color: Color.fromRGBO(80, 194, 201, 1)),
-                  ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  new SizedBox(
-                    width: 380.0,
-                    height: 60.0,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: Color.fromRGBO(80, 194, 201, 1)),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      onPressed: () async {
-                        User? user = await loginUsingEmailPassword(email: _emailController.text, password: _passwordController.text, context: context);
-                        print(user);
-                        if(user != null) {
-                           Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Mytodolist(uid: user.uid,)),
-                    );
-                        }
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Do not have an account ?',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Text(
-                        'Sign Up',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Color.fromRGBO(80, 194, 201, 1)),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
+    double screenHeight = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.height;
+    return Container(
+      width: double.infinity,
+      height: screenWidth,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/image/shape_top.png'),
+          alignment: Alignment.topLeft,
+        )
       ),
-    );
+      child:
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Welcome back',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+              ),
+              SizedBox(
+                height: screenWidth/12,
+              ),
+              Image.asset('assets/image/logo_login.png',
+                  width: screenHeight*4/5,
+                  alignment: Alignment.center),
+              SizedBox(
+                height: screenWidth/12,
+              ),
+              new SizedBox(
+                width: screenHeight/2,
+                height: 60.0,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: MColor.blue_main),
+                  child: Text(
+                    'Login by Google',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onPressed: () async {
+                    await signInWithGoogle();
+                    if (mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>  Mytodolist(uid: FirebaseAuth.instance.currentUser!.uid.toString(),),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          )
+        )
+      );
   }
 }
