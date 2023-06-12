@@ -111,11 +111,11 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                       name: controller_name_Task.text,
                       reminder: set_time_reminder,
                       completed: false,
-                      state: options.setStatetask(set_duedate_choose),
+                      state: options.setStatetask(set_duedate_choose,false),
                       duedate: set_duedate_choose,//DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
                       id: time_ran_id.toString());
                    options.SavetoFireBase(task);
-                   options.update_state_task(time_ran_id.toString(), set_duedate_choose);
+                   options.update_state_task(time_ran_id.toString(), set_duedate_choose,false);
                    print('date task' + set_date_choose);
                    print('Date to day'+ DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0).millisecondsSinceEpoch.toString());
                    Navigator.pop(context);

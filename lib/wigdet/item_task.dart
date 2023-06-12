@@ -87,6 +87,7 @@ class _ItemsViewState extends State<ItemsView> {
                         print('checked' + this.widget.task.id.toString());
                         option.checked_task(
                             this.widget.task.id.toString(), value!);
+                        option.update_state_task(this.widget.task.id.toString(),this.widget.task.duedate.toString(), value);
                       });
                     }),
                 SizedBox(

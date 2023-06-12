@@ -65,11 +65,12 @@ class _MTaskState extends State<MTask> {
                       child: TextField(
                         onChanged: (values) {
                           setState(() {
-                            if(controller_search.text != null)
+                            if(!controller_search.text.isEmpty)
                               check_search = true;
                             else
                               check_search = false;
                           });
+                          print(':'+controller_search.text);
                         },
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(10),
@@ -98,14 +99,15 @@ class _MTaskState extends State<MTask> {
               Expanded(
                 child: StreamBuilder(
                     stream: recipes
-                        .orderBy('duedate', descending: false)
+                        .orderBy('state', descending: false)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (check_search) {
                         return ListView.builder(
                           itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context,index){
-                          if(snapshot.data?.docs[index].get('name').contains(controller_search.text))
+                            itemBuilder: (BuildContext context,int index){
+                              print('name'+snapshot.data?.docs[index].get('name'));
+                          if(snapshot.data?.docs[index].get('name').contains(controller_search.text) == true)
                           {
                             Task_todo task = Task_todo(
                                 date: snapshot.data?.docs[index].get('date'),
@@ -116,6 +118,10 @@ class _MTaskState extends State<MTask> {
                                 completed: snapshot.data?.docs[index].get('completed'));
                             return ItemsView(task: task, color: index);
                           }
+                          else{
+                            return Container(height: 0,);
+                          }
+
                         });
                       } else {
                         if (!snapshot.hasData) {
@@ -139,19 +145,20 @@ class _MTaskState extends State<MTask> {
                                   child: Padding(
                                     padding: EdgeInsets.only(top: 10),
                                     child: Text(
-                                      value,
+                                      value.substring(1),
                                       textAlign: TextAlign.left,
                                       style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   )),
+
                               useStickyGroupSeparators: false,
                               floatingHeader: true,
                               indexedItemBuilder:
                                   (context, dynamic element, index) {
                                 options.update_state_task(
-                                    element.get('id'), element.get('duedate'));
+                                    element.get('id'), element.get('duedate'), element.get('completed'));
                                 Task_todo task = Task_todo(
                                     date: element.get('date'),
                                     duedate: element.get('duedate'),
