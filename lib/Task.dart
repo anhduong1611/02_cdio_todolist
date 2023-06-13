@@ -1,265 +1,139 @@
+import 'package:cdio/OTask.dart';
+import 'package:cdio/Todolist_Color.dart';
+import 'package:cdio/wigdet/bottomsheet.dart';
+import 'package:cdio/wigdet/item_task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:intl/intl.dart';
 
-class MCalendar extends StatefulWidget {
-  const MCalendar({Key? key}) : super(key: key);
+const kDefaultPadding = 20.0;
+
+class MTask extends StatefulWidget {
+  const MTask({Key? key}) : super(key: key);
 
   @override
-  State<MCalendar> createState() => _MCalendarState();
+  State<MTask> createState() => _MTaskState();
 }
 
-class _MCalendarState extends State<MCalendar> {
-  List<Color> _colorCollection = <Color>[];
-  MeetingDataSource? events;
-  String? selected_date;
-  final myController = TextEditingController();
-  late List<Meeting> list;
-  int count = 0;
-  late DateTime _minDate, _maxDate;
-  final List<String> options = <String>['Add', 'Delete', 'Update'];
-  final databaseReference = FirebaseFirestore.instance;
-   String id = DateTime.now().toString();
-
+class _MTaskState extends State<MTask> {
+  late String uid;
   @override
   void initState() {
-    _initializeEventColor();
-    _minDate = DateTime(2020, 3, 5, 9, 0, 0);
-    _maxDate = DateTime(2024, 3, 25, 9, 0, 0);
-    getDataFromFireStore().then((results) {
-      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-        setState(() {});
-      });
-    });
     super.initState();
-  }
-  // void refreshpage() {
-  //   setState(() {
-  //     count++;
-  //   });
-  // }
-
-  Future<void> getDataFromFireStore() async {
-    var snapShotsValue = await databaseReference
-        .collection("Users")
-        .doc(FirebaseAuth.instance.currentUser?.uid.toString())
-        .collection('Tasks')
-        .get();
-
-    // if (snapShotsValue.exists) {
-    //   var data = snapShotsValue.data();
-    //   if (data != null) {
-    //     var meeting = Meeting(
-    //       eventName: data['Subject'],
-    //       from: DateFormat('dd/MM/yyyy').parse(data['StartTime']),
-    //       to: DateFormat('dd/MM/yyyy').parse(data['EndTime']),
-    //       background: Color.fromARGB(255, 21, 207, 167),
-    //       isAllDay: false,
-    //     );
-    //     print('ghi thanh cong');
-    //   }
-    // }
-
-    list = snapShotsValue.docs
-        .map((e) => Meeting(
-            date: e.data()['date'],
-            id: e.data()['id'],
-            name: e.data()['name'],
-            duedate: e.data()['duedate'],
-            color: Color.fromARGB(255, 21, 207, 167),
-            reminder: e.data()['reminder']))
-        .toList();
-    setState(() {
-      events = MeetingDataSource(list);
+    Firebase.initializeApp().whenComplete(() {
+      print("completed");
+      setState(() {});
+    });
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        uid = user.uid;
+      }
     });
   }
 
+  final db = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Scaffold(
-          body: Stack(
+    CollectionReference recipes = FirebaseFirestore.instance
+        .collection("Users")
+        .doc(uid)
+        .collection('Tasks');
+    double screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 10,
+            right: 10,
+            top: 30,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: 50),
-                child: SfCalendar(
-                  minDate: _minDate,
-                  maxDate: _maxDate,
-                  view: CalendarView.month,
-                  todayHighlightColor: const Color.fromARGB(40, 10, 10, 191),
-                  initialDisplayDate: DateTime(2023, 6, 6, 9, 0, 0),
-                  dataSource: events,
-                  // showCurrentTimeIndicator: true,
-                  onTap: (CalendarTapDetails details) {
-                    selected_date = details.date!
-                        .toString()
-                        .split(' ')[0]
-                        .split('-')
-                        .reversed
-                        .toList()
-                        .join('/');
-    
-                    print(selected_date);
-                  },
-                  monthViewSettings: MonthViewSettings(
-                    showAgenda: true,
+              Row(
+                children: [
+                  const Expanded(
+                    child: SizedBox(
+                      height: 55,
+                      child: TextField(
+                          decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        hintText: 'Search',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100))),
+                      )),
+                    ),
                   ),
+                  IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.search_rounded,
+                        size: 30,
+                        color: MColor.blue_main,
+                      ))
+                ],
+              ),
+              const SizedBox(height: kDefaultPadding * 1.5),
+              const Text(
+                'TODAY',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: StreamBuilder(
+                  stream: recipes.snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return ListView.builder(
+                        itemCount: snapshot.data?.docs.length,
+                        physics: BouncingScrollPhysics(),
+                        padding: EdgeInsets.all(8),
+                        itemBuilder: (BuildContext ctx, int index) {
+                          return ItemsView(
+                              date: snapshot.data?.docs[index].get('date'),
+                              name: snapshot.data?.docs[index].get('name'),
+                              id: snapshot.data?.docs[index].get('id'),
+                              completed:
+                                  snapshot.data?.docs[index].get('completed'),
+                              color: index);
+                        },
+                      );
+                    }
+                  },
                 ),
               ),
-              SizedBox(
-                height: 50,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 500),
-                child: TextField(
-                    controller: myController,
-                    decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Enter your username')),
-              )
-              // ListView.builder(
-              //   itemCount: list.length,
-              //   itemBuilder: (context, index) {
-              //     Meeting meeting = list[index];
-              //     return ListTile(
-              //       title: Text('${meeting.eventName}'),
-              //       subtitle: Text('From: ${meeting.from}, To: ${meeting.to}'),
-              //       trailing: ElevatedButton(
-              //         child: Text('Button Text'),
-              //         onPressed: () {
-              //           // Button Clicked
-              //         },
-              //       ),
-              //     );
-              //   },
-              // )
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-             
-              print(myController);
-              databaseReference
-                  .collection("Users")
-                  .doc(FirebaseAuth.instance.currentUser?.uid.toString())
-                  .collection('Tasks')
-                  .doc(id)
-                  .set({
-                'date': '$selected_date',
-                'duedate': '$selected_date',
-                'id': id,
-                'name': myController.text,
-                'reminder': '$selected_date',
-              });
-              getDataFromFireStore();
-    
-              print(selected_date);
-            },
-            child: Icon(Icons.add),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                backgroundColor: Colors.white,
+                context: context,
+                builder: (BuildContext contexxt) {
+                  return BottomSheetTask();
+                });
+          },
+          backgroundColor: MColor.blue_main,
+          child: const Icon(
+            Icons.add,
           )),
     );
   }
-
-  void _initializeEventColor() {
-    _colorCollection.add(const Color(0xFF0F8644));
-    _colorCollection.add(const Color(0xFF8B1FA9));
-    _colorCollection.add(const Color(0xFFD20100));
-    _colorCollection.add(const Color(0xFFFC571D));
-    _colorCollection.add(const Color(0xFF36B37B));
-    _colorCollection.add(const Color(0xFF01A1EF));
-    _colorCollection.add(const Color(0xFF3D4FB5));
-    _colorCollection.add(const Color(0xFFE47C73));
-    _colorCollection.add(const Color(0xFF636363));
-    _colorCollection.add(const Color(0xFF0A8043));
-  }
-}
-
-class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Meeting> source) {
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].from;
-  }
-
-  @override
-  DateTime getEndTime(int index) {
-    return appointments![index].to;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return appointments![index].isAllDay;
-  }
-
-  @override
-  String getSubject(int index) {
-    return appointments![index].eventName;
-  }
-
-  @override
-  Color getColor(int index) {
-    return appointments![index].background;
-  }
-}
-
-class Meeting {
-  String? date;
-  String? duedate;
-  bool? completed;
-  String? reminder;
-  String? name;
-  String? id;
-  Color? color;
-  Meeting(
-      {this.duedate,
-      this.completed,
-      this.reminder,
-      this.date,
-      this.name,
-      this.id,
-      this.color});
-  // // Getters
-  // String? get getDate => date;
-  // String? get getDuedate => duedate;
-  // bool? get isCompleted => completed;
-  // String? get getReminder => reminder;
-  // String? get getName => name;
-  // String? get getId => id;
-  // Color? get getColor => color;
-
-  // // Setters
-  // set setDate(String? value) {
-  //   date = value;
-  // }
-
-  // set setDuedate(String? value) {
-  //   duedate = value;
-  // }
-
-  // set setCompleted(bool? value) {
-  //   completed = value;
-  // }
-
-  // set setReminder(String? value) {
-  //   reminder = value;
-  // }
-
-  // set setName(String? value) {
-  //   name = value;
-  // }
-
-  // set setId(String? value) {
-  //   id = value;
-  // }
-
-  // set setColor(Color? value) {
-  //   color = value;
-  // }
 }
