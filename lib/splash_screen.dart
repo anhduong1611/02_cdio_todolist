@@ -50,7 +50,10 @@ class splash_screen extends StatelessWidget {
                     style: TextStyle(fontSize: 18),
                   ),
                   onPressed: () {
-                    check(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Home()),
+                    );
                   },
                 ),
               ),

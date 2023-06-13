@@ -4,6 +4,7 @@ import 'package:cdio/Task.dart';
 import 'package:cdio/Todolist_Color.dart';
 import 'package:cdio/database/FireBaseOptions.dart';
 import 'package:cdio/login_screen.dart';
+import 'package:cdio/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ void main() async {
   runApp(
       MaterialApp(
 
-    home: Home(),
+    home: splash_screen(),
     debugShowCheckedModeBanner: false,
   ));
 }
