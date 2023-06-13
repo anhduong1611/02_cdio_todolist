@@ -57,15 +57,6 @@ class FireBaseOptions{
         return "3FUTURE";
     }else
       return "4COMPLETED";
-    // if(completed)
-    //   return "COMPLETED";
-    // else {
-    //   if(today.millisecondsSinceEpoch.toString() == duedate)
-    //     return "TODAY";
-    //   else if(today.millisecondsSinceEpoch.toString().compareTo(duedate) > 0)
-    //     return "PERIVOUS";
-    //   else
-    //     return "FUTURE";
-    // }
+
   }
 }

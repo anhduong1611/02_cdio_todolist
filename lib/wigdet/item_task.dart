@@ -41,83 +41,106 @@ class _ItemsViewState extends State<ItemsView> {
             int.parse(this.widget.task.duedate.toString())))
         : "";
 
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.only(top: 20),
-      height: 60,
-      decoration: BoxDecoration(
-          color: this.widget.color % 2 == 0 ? MColor.blue_op : Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(100))),
-      child: Padding(
-        padding:
-            const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: (this.widget.task.completed) as bool ? MColor.grey_completed_background: (this.widget.color % 2 == 0 ? MColor.blue_op : Colors.white),
+                borderRadius: BorderRadius.all(Radius.circular(100))),
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    this.widget.task.name.toString(),
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Align(
+                              alignment:AlignmentDirectional.centerStart,
+                              child: Text(
+                                this.widget.task.name.toString(),
+                                maxLines: 1,
+                                style: TextStyle(fontSize: 13,
+                                color: (this.widget.task.completed) as bool ? MColor.grey_text_completed:Colors.black),
+                              ),
+                            ),
+                            Container(
+                              child: Divider(
+                                  height: 5,
+                                  thickness: 1,
+                                  color:(this.widget.task.completed) as bool ? MColor.grey_text_completed:Colors.transparent),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          formattedDate,
+                          style: TextStyle(fontSize: 10, color:(this.widget.task.completed) as bool ? MColor.grey_text_duedate_completed: MColor.red_main),
+                        )
+                      ],
+                    ),
                   ),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(fontSize: 10, color: MColor.red_main),
+                  Row(
+                    children: [
+                      Checkbox(
+                          side:
+                          BorderSide(color: Colors.transparent),
+                          activeColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          checkColor: Colors.white,
+                          fillColor: MaterialStateProperty.resolveWith(getColor),
+                          value: this.widget.task.completed,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              print('checked' + this.widget.task.id.toString());
+                              option.checked_task(
+                                  this.widget.task.id.toString(), value!);
+                              option.update_state_task(widget.task.id.toString(),this.widget.task.duedate.toString(), value!);
+                            });
+                          }),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      InkWell(
+                        child: SvgPicture.asset('assets/icons/ic_edit.svg',color: (this.widget.task.completed) as bool ? MColor.grey_text_duedate_completed:MColor.blue_main,),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MUpdateScreen(
+                                        task_todo: this.widget.task,
+                                      )));
+                        },
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          MAlerDialog alert = MAlerDialog();
+                          alert.Alert_delete(context, this.widget.task.id.toString());
+                        },
+                        child: SvgPicture.asset('assets/icons/ic_bin.svg',color: (this.widget.task.completed) as bool ? MColor.grey_text_duedate_completed:MColor.red_main,),
+                      )
+                    ],
                   )
                 ],
               ),
             ),
-            Row(
-              children: [
-                Checkbox(
-                    side:
-                    BorderSide(color: Colors.transparent),
-                    activeColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    checkColor: Colors.white,
-                    fillColor: MaterialStateProperty.resolveWith(getColor),
-                    value: this.widget.task.completed,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        print('checked' + this.widget.task.id.toString());
-                        option.checked_task(
-                            this.widget.task.id.toString(), value!);
-                        option.update_state_task(this.widget.task.id.toString(),this.widget.task.duedate.toString(), value);
-                      });
-                    }),
-                SizedBox(
-                  width: 20,
-                ),
-                InkWell(
-                  child: SvgPicture.asset('assets/icons/ic_edit.svg'),
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MUpdateScreen(
-                                  task_todo: this.widget.task,
-                                )));
-                  },
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                InkWell(
-                  onTap: () {
-                    MAlerDialog alert = MAlerDialog();
-                    alert.Alert_delete(context, this.widget.task.id.toString());
-                  },
-                  child: SvgPicture.asset('assets/icons/ic_bin.svg'),
-                )
-              ],
-            )
-          ],
-        ),
+          ),
+
+
+        ],
       ),
     );
   }
