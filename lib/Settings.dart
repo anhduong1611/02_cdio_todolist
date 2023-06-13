@@ -1,3 +1,4 @@
+import 'package:cdio/Screen/feedback_screen.dart';
 import 'package:cdio/Todolist_Color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,7 +23,6 @@ class _MSettingsState extends State<MSettings> {
 
     user_email = FirebaseAuth.instance.currentUser!.email!;
      profilePhoto = FirebaseAuth.instance.currentUser!.photoURL!;
-     print(profilePhoto);
   }
   @override
   Widget build(BuildContext context) {
@@ -115,7 +115,7 @@ class _MSettingsState extends State<MSettings> {
                 padding: const EdgeInsets.all(20.0),
                 child: InkWell(
                   onTap: (){
-
+                      Navigator.push(context, MaterialPageRoute(builder: (builder)=>MFeedBack()));
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

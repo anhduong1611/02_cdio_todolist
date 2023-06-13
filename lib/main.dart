@@ -81,7 +81,6 @@ class _MytodolistState extends State<Mytodolist> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-
       backgroundColor: MColor.grey_background,
       body:   Container(
         width: double.infinity,
@@ -92,10 +91,8 @@ class _MytodolistState extends State<Mytodolist> {
             )
           ),
           child: Container(child: _widgetOptions.elementAt(_selectedIndex))),
-
       //floatingActionButton: FloatingActionButton.large(onPressed: (){},child: Icon(Icons.add,size: 40,),backgroundColor: MColor.blue_main,),
       bottomNavigationBar: MoltenBottomNavigationBar(
-
         domeCircleColor: MColor.blue_main,
         selectedIndex: _selectedIndex,
         onTabChange: (clickedIndex) {
