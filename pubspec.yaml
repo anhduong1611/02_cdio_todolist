@@ -44,7 +44,8 @@ dependencies:
   grouped_list: ^5.1.2
   google_sign_in: ^5.3.3
   flutter_email_sender: ^6.0.0
-
+  syncfusion_flutter_calendar: ^21.2.9
+  table_calendar: ^3.0.9
 dev_dependencies:
   flutter_test:
     sdk: flutter
