@@ -32,6 +32,7 @@ class _MTaskState extends State<MTask> {
       print("completed");
       setState(() {});
     });
+    controller_search.text = "";
     //options.readdata();
   }
 
