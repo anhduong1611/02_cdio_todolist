@@ -80,88 +80,86 @@ class _MCalendarState extends State<MCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Scaffold(
-          body: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 50),
-                child: SfCalendar(
-                  minDate: _minDate,
-                  maxDate: _maxDate,
-                  view: CalendarView.month,
-                  todayHighlightColor: const Color.fromARGB(40, 10, 10, 191),
-                  initialDisplayDate: DateTime(2023, 6, 6, 9, 0, 0),
-                  dataSource: events,
-                  // showCurrentTimeIndicator: true,
-                  onTap: (CalendarTapDetails details) {
-                    selected_date = details.date!
-                        .toString()
-                        .split(' ')[0]
-                        .split('-')
-                        .reversed
-                        .toList()
-                        .join('/');
-    
-                    print(selected_date);
-                  },
-                  monthViewSettings: MonthViewSettings(
-                    showAgenda: true,
-                  ),
+    return Scaffold(
+        body: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 50),
+              child: SfCalendar(
+                minDate: _minDate,
+                maxDate: _maxDate,
+                view: CalendarView.month,
+                todayHighlightColor: const Color.fromARGB(40, 10, 10, 191),
+                initialDisplayDate: DateTime(2023, 6, 6, 9, 0, 0),
+                dataSource: events,
+                // showCurrentTimeIndicator: true,
+                onTap: (CalendarTapDetails details) {
+                  selected_date = details.date!
+                      .toString()
+                      .split(' ')[0]
+                      .split('-')
+                      .reversed
+                      .toList()
+                      .join('/');
+
+                  print(selected_date);
+                },
+                monthViewSettings: MonthViewSettings(
+                  showAgenda: true,
                 ),
               ),
-              SizedBox(
-                height: 50,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 500),
-                child: TextField(
-                    controller: myController,
-                    decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Enter your username')),
-              )
-              // ListView.builder(
-              //   itemCount: list.length,
-              //   itemBuilder: (context, index) {
-              //     Meeting meeting = list[index];
-              //     return ListTile(
-              //       title: Text('${meeting.eventName}'),
-              //       subtitle: Text('From: ${meeting.from}, To: ${meeting.to}'),
-              //       trailing: ElevatedButton(
-              //         child: Text('Button Text'),
-              //         onPressed: () {
-              //           // Button Clicked
-              //         },
-              //       ),
-              //     );
-              //   },
-              // )
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-             
-              print(myController);
-              databaseReference
-                  .collection("Users")
-                  .doc(FirebaseAuth.instance.currentUser?.uid.toString())
-                  .collection('Tasks')
-                  .doc(id)
-                  .set({
-                'date': '$selected_date',
-                'duedate': '$selected_date',
-                'id': id,
-                'name': myController.text,
-                'reminder': '$selected_date',
-              });
-              getDataFromFireStore();
-    
-              print(selected_date);
-            },
-            child: Icon(Icons.add),
-          )),
-    );
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 500),
+              child: TextField(
+                  controller: myController,
+                  decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Enter your username')),
+            )
+            // ListView.builder(
+            //   itemCount: list.length,
+            //   itemBuilder: (context, index) {
+            //     Meeting meeting = list[index];
+            //     return ListTile(
+            //       title: Text('${meeting.eventName}'),
+            //       subtitle: Text('From: ${meeting.from}, To: ${meeting.to}'),
+            //       trailing: ElevatedButton(
+            //         child: Text('Button Text'),
+            //         onPressed: () {
+            //           // Button Clicked
+            //         },
+            //       ),
+            //     );
+            //   },
+            // )
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+
+            print(myController);
+            databaseReference
+                .collection("Users")
+                .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+                .collection('Tasks')
+                .doc(id)
+                .set({
+              'date': '$selected_date',
+              'duedate': '$selected_date',
+              'id': id,
+              'name': myController.text,
+              'reminder': '$selected_date',
+            });
+            getDataFromFireStore();
+
+            print(selected_date);
+          },
+          child: Icon(Icons.add),
+        ));
   }
 
   void _initializeEventColor() {
@@ -225,41 +223,41 @@ class Meeting {
       this.name,
       this.id,
       this.color});
-  // // Getters
-  // String? get getDate => date;
-  // String? get getDuedate => duedate;
-  // bool? get isCompleted => completed;
-  // String? get getReminder => reminder;
-  // String? get getName => name;
-  // String? get getId => id;
-  // Color? get getColor => color;
+  // Getters
+  String? get getDate => date;
+  String? get getDuedate => duedate;
+  bool? get isCompleted => completed;
+  String? get getReminder => reminder;
+  String? get getName => name;
+  String? get getId => id;
+  Color? get getColor => color;
 
-  // // Setters
-  // set setDate(String? value) {
-  //   date = value;
-  // }
+  // Setters
+  set setDate(String? value) {
+    date = value;
+  }
 
-  // set setDuedate(String? value) {
-  //   duedate = value;
-  // }
+  set setDuedate(String? value) {
+    duedate = value;
+  }
 
-  // set setCompleted(bool? value) {
-  //   completed = value;
-  // }
+  set setCompleted(bool? value) {
+    completed = value;
+  }
 
-  // set setReminder(String? value) {
-  //   reminder = value;
-  // }
+  set setReminder(String? value) {
+    reminder = value;
+  }
 
-  // set setName(String? value) {
-  //   name = value;
-  // }
+  set setName(String? value) {
+    name = value;
+  }
 
-  // set setId(String? value) {
-  //   id = value;
-  // }
+  set setId(String? value) {
+    id = value;
+  }
 
-  // set setColor(Color? value) {
-  //   color = value;
-  // }
+  set setColor(Color? value) {
+    color = value;
+  }
 }
