@@ -1,4 +1,5 @@
 import 'package:cdio/wigdet/bottomsheet.dart';
+import 'package:cdio/wigdet/item_task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -68,7 +69,7 @@ class _MCalendarState extends State<MCalendar> {
             .toList()
             .join('/');
         ;
-   
+        //bien lay cai gia tri ngay tren lich day bien
 
         print(_selectedDate);
       } else if (args.value is List<DateTime>) {
@@ -78,11 +79,18 @@ class _MCalendarState extends State<MCalendar> {
       }
     });
   }
-  // void refreshpage() {
-  //   setState(() {
-  //     count++;
-  //   });
-  // }
+
+  //reload lai cai trang
+  bool isLoad = false;
+  Future<void> refresh() async {
+    setState(() {
+      isLoad = true;
+    });
+    Future.delayed(Duration(seconds: 1));
+    setState(() {
+      isLoad = false;
+    });
+  }
 
   Future<void> getDataFromFireStore() async {
     var snapShotsValue = await FirebaseFirestore.instance
@@ -90,24 +98,12 @@ class _MCalendarState extends State<MCalendar> {
         .doc(FirebaseAuth.instance.currentUser?.uid.toString())
         .collection('Tasks')
         .get();
-
-    //   list = snapShotsValue.docs
-    //       .map((e) => Meeting(
-    //           date: e.data()['date'],
-    //           id: e.data()['id'],
-    //           name: e.data()['name'],
-    //           duedate: e.data()['duedate'],
-    //           color: Color.fromARGB(255, 21, 207, 167),
-    //           reminder: e.data()['reminder']))
-    //       .toList();
-    //   setState(() {
-    //     events = MeetingDataSource(list);
-    //   });
-    // }
   }
-  CollectionReference user = FirebaseFirestore.instance.collection('Users')
-  .doc(FirebaseAuth.instance.currentUser?.uid.toString())
-  .collection('Tasks');
+
+  CollectionReference user = FirebaseFirestore.instance
+      .collection('Users')
+      .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+      .collection('Tasks');
 
   String currentDate = DateFormat('MMddyyyy').format(DateTime.now());
 
@@ -116,13 +112,14 @@ class _MCalendarState extends State<MCalendar> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
-        mainAxisSize: MainAxisSize.min  ,
+        mainAxisSize: MainAxisSize.min,
         children: [
           SfDateRangePicker(
             backgroundColor: color,
-            onSelectionChanged:(dateRangePickerSelectionChangedArgs) {
+            onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
               setState(() {
-                currentDate = DateFormat('MMddyyyy').format(dateRangePickerSelectionChangedArgs.value);
+                currentDate = DateFormat('MMddyyyy')
+                    .format(dateRangePickerSelectionChangedArgs.value);
               });
               print(currentDate);
             },
@@ -131,45 +128,44 @@ class _MCalendarState extends State<MCalendar> {
                 DateTime.now().subtract(const Duration(days: 4)),
                 DateTime.now().add(const Duration(days: 3))),
           ),
-          FutureBuilder<QuerySnapshot>(
-              future: user.get(),
-              builder: (context, snapshot) {
-                 if (snapshot.connectionState == ConnectionState.done) {
-                  return Expanded(
-                    child: ListView(
-                      children: snapshot.data!.docs.where((element) {
-                        Map<String, dynamic> data = element.data() as Map<String, dynamic>;
-                        return DateFormat('MMddyyyy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(data!["date"]))) == currentDate;
-                      },).map((DocumentSnapshot doc) {
-                        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-                        var time = DateTime.fromMillisecondsSinceEpoch(int.parse(data["date"]),isUtc: true).toString()
-                        .split(' ')[0]
-                        .split('-')
-                        .reversed
-                        .toList()
-                        .join('/');
-                        print(time);
-                
-                    
-                        return SizedBox(
-                          height: 100,
-                          child: ListTile(
-                              title:  Text('name:${data['name']}', style: TextStyle(color: Colors.black),),
-                              subtitle:  Text('date: $time',style: TextStyle(color: Colors.black),),
-                              tileColor: Colors.cyan,
-                          ),
-                        );
-                        
-                        ;
-                      }).toList(),
-                    ),
-                  );
-                  
-                } else{
-                return Text("loading");
-                }
-              },
-              )
+          isLoad
+              ? CircularProgressIndicator()
+              : FutureBuilder<QuerySnapshot>(
+                  future: user.get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return Expanded(
+                        child: ListView(
+                          children: snapshot.data!.docs.where(
+                            (element) {
+                              Map<String, dynamic> data =
+                                  element.data() as Map<String, dynamic>;
+                              return DateFormat('MMddyyyy').format(
+                                      DateTime.fromMillisecondsSinceEpoch(
+                                          int.parse(data!["date"]))) ==
+                                  currentDate;
+                            },
+                          ).map((DocumentSnapshot doc) {
+                            Map<String, dynamic> data =
+                                doc.data() as Map<String, dynamic>;
+                            DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+                                    int.parse(data["date"]));
+                            String time = DateFormat('dd/MM/yyyy').format(dateTime);
+                            print(data['name']);
+                            return ItemsView(
+                                date: data["date"],
+                                name: data['name'].toString(),
+                                color: 32,
+                                id: data['date'].toString(),
+                                completed: false);
+                          }).toList(),
+                        ),
+                      );
+                    } else {
+                      return Text("loading");
+                    }
+                  },
+                )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -183,7 +179,7 @@ class _MCalendarState extends State<MCalendar> {
                 context: context,
                 builder: (BuildContext contexxt) {
                   return BottomSheetTask();
-                });
+                }).whenComplete(() => refresh());
           },
           backgroundColor: MColor.blue_main,
           child: const Icon(
@@ -191,59 +187,4 @@ class _MCalendarState extends State<MCalendar> {
           )),
     );
   }
-}
-
-class Meeting {
-  String? date;
-  String? duedate;
-  bool? completed;
-  String? reminder;
-  String? name;
-  String? id;
-  Color? color;
-  Meeting(
-      {this.duedate,
-      this.completed,
-      this.reminder,
-      this.date,
-      this.name,
-      this.id,
-      this.color});
-  // // Getters
-  // String? get getDate => date;
-  // String? get getDuedate => duedate;
-  // bool? get isCompleted => completed;
-  // String? get getReminder => reminder;
-  // String? get getName => name;
-  // String? get getId => id;
-  // Color? get getColor => color;
-
-  // // Setters
-  // set setDate(String? value) {
-  //   date = value;
-  // }
-
-  // set setDuedate(String? value) {
-  //   duedate = value;
-  // }
-
-  // set setCompleted(bool? value) {
-  //   completed = value;
-  // }
-
-  // set setReminder(String? value) {
-  //   reminder = value;
-  // }
-
-  // set setName(String? value) {
-  //   name = value;
-  // }
-
-  // set setId(String? value) {
-  //   id = value;
-  // }
-
-  // set setColor(Color? value) {
-  //   color = value;
-  // }
 }
