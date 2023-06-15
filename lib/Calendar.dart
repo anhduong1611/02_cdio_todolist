@@ -168,7 +168,6 @@ class _MCalendarState extends State<MCalendar> {
                                     type: snapshot.data?.docs[index].get('type'),
                                     completed: snapshot.data?.docs[index]
                                         .get('completed'));
-
                                 return ItemsView(task: task, color: index);
                               } else {
                                 return Container(
