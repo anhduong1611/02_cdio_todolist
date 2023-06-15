@@ -18,7 +18,7 @@ class MUpdateScreen extends StatefulWidget {
   @override
   State<MUpdateScreen> createState() => _MUpdateScreenState();
 }
-
+const List<String> list = <String>['No type', 'Important', 'Personal', 'Work'];
 class _MUpdateScreenState extends State<MUpdateScreen> {
   final name_controller = TextEditingController();
 
@@ -71,6 +71,7 @@ class _MUpdateScreenState extends State<MUpdateScreen> {
 
   Time _time = Time(hour: 11, minute: 30, second: 20);
 
+  String type_task = list.first;
   bool iosStyle = true;
   String set_date_choose = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
   String set_duedate_choose = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,0,0,0,0).millisecondsSinceEpoch.toString();
@@ -83,6 +84,8 @@ class _MUpdateScreenState extends State<MUpdateScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    name_controller.text = this.widget.task_todo.name.toString();
+    type_task = this.widget.task_todo.type.toString();
     List<DateTime?> _dialogCalendarPickerValue = [
       DateTime.fromMillisecondsSinceEpoch(int.parse(widget.task_todo.date.toString())),
       DateTime.fromMillisecondsSinceEpoch(int.parse(widget.task_todo.duedate.toString())),
@@ -108,22 +111,57 @@ class _MUpdateScreenState extends State<MUpdateScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      InkWell(
-                          onTap: null,
-                          child: Container(
-                              height: 30,
-                              width: 150,
-                              decoration: const BoxDecoration(
-                                color: MColor.grey_background,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  'No type',
-                                  style: TextStyle(color: MColor.grey_text),
+                      Container(
+                        padding: EdgeInsets.only(left: 10,right: 10),
+                        alignment: Alignment.center,
+                        width: 120,
+
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            //color: (this.widget.task.completed) as bool ? MColor.grey_completed_background: (this.widget.color % 2 == 0 ? MColor.blue_op : Colors.white),
+                            borderRadius: BorderRadius.all(Radius.circular(100))),
+                        child: Center(
+                          child: DropdownButton<String>(
+                            dropdownColor: Colors.white,
+                            alignment: Alignment.center,
+                            underline: Container(
+                              height: 0,
+                            ),
+                            isExpanded: true,
+                            value: type_task,
+                            elevation: 18,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            iconSize: 0,
+                            onChanged: (String? value) {
+                              // This is called when the user selects an item.
+                              type_task = value!;
+                              setState(() {
+                                this.widget.task_todo.type = value;
+                              });
+                            },
+
+                            items: list.map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                alignment: Alignment.center,
+                                value: value,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 20,
+                                      margin: EdgeInsets.only(right: 10),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: setColor(value),
+                                      ),
+                                    ),
+                                    Text(value,style: TextStyle(color: Colors.black),)
+                                  ],
                                 ),
-                              ))),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
                       InkWell(
                         onTap: (){
                           this.widget.task_todo.name = name_controller.text;
@@ -218,4 +256,14 @@ class _MUpdateScreenState extends State<MUpdateScreen> {
           )),
     );
   }
+}
+setColor(String values){
+  if(values == 'No type')
+    return MColor.grey_background;
+  if(values == 'Important')
+    return MColor.red_main;
+  if(values == 'Personal')
+    return MColor.personal;
+  if(values == 'Work')
+    return MColor.work;
 }

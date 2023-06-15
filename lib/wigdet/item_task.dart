@@ -36,6 +36,8 @@ class _ItemsViewState extends State<ItemsView> {
 
   @override
   Widget build(BuildContext context) {
+
+    double screenHeight = MediaQuery.of(context).size.height;
     String formattedDate = this.widget.task.duedate != ""
         ? DateFormat('dd-MM-yyyy').format(DateTime.fromMillisecondsSinceEpoch(
             int.parse(this.widget.task.duedate.toString())))
@@ -44,20 +46,31 @@ class _ItemsViewState extends State<ItemsView> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
-        alignment: Alignment.center,
+
         children: [
+
           Container(
             width: double.infinity,
+            height: 60,
             decoration: BoxDecoration(
-                color: (this.widget.task.completed) as bool ? MColor.grey_completed_background: (this.widget.color % 2 == 0 ? MColor.blue_op : Colors.white),
+                color: (this.widget.task.completed) as bool ? MColor.grey_completed_background : (this.widget.color % 2 == 0 ? MColor.blue_op : Colors.white),
+
                 borderRadius: BorderRadius.all(Radius.circular(100))),
-            child: Padding(
-              padding:
-                  const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 25,
+                  height: 60,
+                  decoration: BoxDecoration(
+                      color: setColor(this.widget.task.type.toString()),
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(110),bottomLeft: Radius.circular(110))
+                    ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.only(left: 10, right: 20, top: 10, bottom: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -89,7 +102,10 @@ class _ItemsViewState extends State<ItemsView> {
                       ],
                     ),
                   ),
-                  Row(
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 20, top: 10, bottom: 10),
+                  child: Row(
                     children: [
                       Checkbox(
                           side:
@@ -133,9 +149,9 @@ class _ItemsViewState extends State<ItemsView> {
                         child: SvgPicture.asset('assets/icons/ic_bin.svg',color: (this.widget.task.completed) as bool ? MColor.grey_text_duedate_completed:MColor.red_main,),
                       )
                     ],
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             ),
           ),
 
@@ -144,4 +160,15 @@ class _ItemsViewState extends State<ItemsView> {
       ),
     );
   }
+  setColor(String values){
+    if(values == 'No type')
+      return this.widget.task.completed as bool == false? (this.widget.color % 2 == 0 ? MColor.blue_op : Colors.white): MColor.grey_completed_background1;
+    if(values == 'Important')
+      return MColor.red_main;
+    if(values == 'Personal')
+      return MColor.personal;
+    if(values == 'Work')
+      return MColor.work;
+  }
 }
+

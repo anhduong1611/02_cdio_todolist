@@ -110,13 +110,16 @@ class _MTaskState extends State<MTask> {
                               print('name'+snapshot.data?.docs[index].get('name'));
                           if(snapshot.data?.docs[index].get('name').contains(controller_search.text) == true)
                           {
+
                             Task_todo task = Task_todo(
                                 date: snapshot.data?.docs[index].get('date'),
                                 duedate: snapshot.data?.docs[index].get('duedate'),
                                 name: snapshot.data?.docs[index].get('name'),
                                 id: snapshot.data?.docs[index].get('id'),
                                 state: snapshot.data?.docs[index].get('state'),
+                                type:  snapshot.data?.docs[index].get('type'),
                                 completed: snapshot.data?.docs[index].get('completed'));
+
                             return ItemsView(task: task, color: index);
                           }
                           else{
@@ -166,6 +169,7 @@ class _MTaskState extends State<MTask> {
                                     name: element.get('name'),
                                     id: element.get('id'),
                                     state: element.get('state'),
+                                    type:  snapshot.data?.docs[index].get('type'),
                                     completed: element.get('completed'));
                                 return ItemsView(task: task, color: index);
                               },

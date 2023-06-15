@@ -8,9 +8,10 @@ class Task_todo{
   late String ? name;
   final String ? id;
   final String ? state;
+   String ? type;
 
 
-  Task_todo({this.duedate, this.completed, this.reminder, this.date, this.name,this.id, this.state});
+  Task_todo({this.duedate, this.completed, this.reminder, this.date, this.name,this.id, this.state,this.type});
 
   factory Task_todo.fromFirestore(
       DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -25,6 +26,7 @@ class Task_todo{
       completed:  data?['completed'],
       reminder:  data?['reminder'],
       duedate:  data?['duedate'],
+      type:  data?['type'],
     );
   }
 
@@ -37,6 +39,7 @@ class Task_todo{
       if (duedate != null) "duedate": duedate,
       if (id != null) "id": id,
       if (state != null) "state": state,
+      if (type != null) "type": type,
     };
   }
 }
