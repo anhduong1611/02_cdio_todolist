@@ -1,6 +1,7 @@
 import 'package:cdio/Todolist_Color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 class MFeedBack extends StatefulWidget {
   const MFeedBack({Key? key}) : super(key: key);
 
@@ -107,17 +108,7 @@ class _MFeedBackState extends State<MFeedBack> {
                           ),
                         ),
                         InkWell(
-                         //  onTap: () async {
-                         //    final Email email = Email(
-                         //      body: tx_body.text,
-                         //      subject: tx_title.text,
-                         //      recipients: ['hothianhduong1611@gmail.com'],
-                         //      cc: ['hothianhduong@gmail.com'],
-                         //      bcc: ['hothianhduong16112002@gmail.com'],
-                         //      isHTML: false,
-                         //    );
-                         //    await FlutterEmailSender.send(email);
-                         // },
+                          onTap: send,
                           child: Container(
                             decoration: BoxDecoration(
                               color: MColor.blue_main,
@@ -137,5 +128,33 @@ class _MFeedBackState extends State<MFeedBack> {
             ),
           )),
     );
+  }
+  Future<void> send() async {
+    List<String> h = ['hothianhduong16112002@gmail.com'];
+    final Email email = Email(
+      body: tx_body.text,
+      subject: tx_title.text,
+      recipients: h,
+      isHTML: false,
+    );
+    //await FlutterEmailSender.send(email);
+    String platformResponse;
+
+    try {
+      await FlutterEmailSender.send(email);
+      platformResponse = 'Thank you for your feedback';
+    } catch (error) {
+      print(error);
+      platformResponse = error.toString();
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(platformResponse),
+      ),
+    );
+    Navigator.pop(context);
   }
 }
