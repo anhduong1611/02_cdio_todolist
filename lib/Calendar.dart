@@ -34,7 +34,7 @@ class _MCalendarState extends State<MCalendar> {
   String _range = '';
   String _rangeCount = '';
   CollectionReference users = FirebaseFirestore.instance.collection('Users');
-
+  final String? uid = FirebaseAuth.instance.currentUser?.uid.toString();
   @override
   void initState() {
     getDataFromFireStore().then((results) {
@@ -89,7 +89,7 @@ class _MCalendarState extends State<MCalendar> {
     setState(() {
       isLoad = true;
     });
-    Future.delayed(Duration(seconds: 1));
+    Future.delayed(Duration(microseconds: 1));
     setState(() {
       isLoad = false;
     });
@@ -98,93 +98,91 @@ class _MCalendarState extends State<MCalendar> {
   Future<void> getDataFromFireStore() async {
     var snapShotsValue = await FirebaseFirestore.instance
         .collection("Users")
-        .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+        .doc(uid)
         .collection('Tasks')
         .get();
   }
-
-  CollectionReference user = FirebaseFirestore.instance
-      .collection('Users')
-      .doc(FirebaseAuth.instance.currentUser?.uid.toString())
-      .collection('Tasks');
 
   String currentDate = DateFormat('MMddyyyy').format(DateTime.now());
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference user = FirebaseFirestore.instance
+        .collection("Users")
+        .doc(uid )
+        .collection('Tasks');
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenW = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 30,left: 10,right: 10,bottom: 10),
-            child: SfDateRangePicker(
+      body: SizedBox(
+        width: screenW,
+        height: screenHeight,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 30,left: 10,right: 10,bottom: 10),
+              child: SfDateRangePicker(
 
-              rangeTextStyle: TextStyle(fontWeight: FontWeight.bold),
-              toggleDaySelection: true,
-              allowViewNavigation: true,
+                rangeTextStyle: TextStyle(fontWeight: FontWeight.bold),
+                toggleDaySelection: true,
+                allowViewNavigation: true,
 
-              navigationDirection: DateRangePickerNavigationDirection.horizontal,
-              selectionColor: MColor.red_main,
-              backgroundColor: MColor.blue_background_calendar,
-              showNavigationArrow: true,
-              onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
-                setState(() {
-                  currentDate = DateFormat('MMddyyyy')
-                      .format(dateRangePickerSelectionChangedArgs.value);
-                });
-              },
-              selectionMode: DateRangePickerSelectionMode.single,
-              initialSelectedRange: PickerDateRange(
-                  DateTime.now().subtract(const Duration(days: 4)),
-                  DateTime.now().add(const Duration(days: 3))),
+                navigationDirection: DateRangePickerNavigationDirection.horizontal,
+                selectionColor: MColor.red_main,
+                backgroundColor: MColor.blue_background_calendar,
+                showNavigationArrow: true,
+                onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
+                  setState(() {
+                    currentDate = DateFormat('MMddyyyy')
+                        .format(dateRangePickerSelectionChangedArgs.value);
+                  });
+                },
+                selectionMode: DateRangePickerSelectionMode.single,
+                initialSelectedRange: PickerDateRange(
+                    DateTime.now().subtract(const Duration(days: 4)),
+                    DateTime.now().add(const Duration(days: 3))),
+              ),
             ),
-          ),
-          isLoad
-              ? CircularProgressIndicator()
-              : FutureBuilder<QuerySnapshot>(
-                  future: user.get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      print("dcne");
-                      return Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ListView.builder(
-                            itemCount: snapshot.data!.docs.length,
-                              itemBuilder: ((context, index) {
-                            if (DateFormat('MMddyyyy').format(
-                                    DateTime.fromMillisecondsSinceEpoch(int.parse(
-                                        snapshot.data?.docs[index]
-                                            .get('duedate')))) ==
-                                currentDate) {
-                              Task_todo task = Task_todo(
-                                  date: snapshot.data?.docs[index].get('date'),
-                                  duedate:
-                                      snapshot.data?.docs[index].get('duedate'),
-                                  name: snapshot.data?.docs[index].get('name'),
-                                  id: snapshot.data?.docs[index].get('id'),
-                                  state: snapshot.data?.docs[index].get('state'),
-                                  type: snapshot.data?.docs[index].get('type'),
-                                  completed: snapshot.data?.docs[index]
-                                      .get('completed'));
+             Expanded(
+               child: StreamBuilder(
+                      stream: user.orderBy('state', descending: false).snapshots(),
+                      builder: (context, snapshot) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView.builder(
+                              itemCount: (snapshot.data?.docs.length) ?? 0,
+                                itemBuilder: ((context, index) {
+                              if (DateFormat('MMddyyyy').format(
+                                      DateTime.fromMillisecondsSinceEpoch(int.parse(
+                                          snapshot.data?.docs[index]
+                                              .get('duedate')))) ==
+                                  currentDate) {
+                                Task_todo task = Task_todo(
+                                    date: snapshot.data?.docs[index].get('date'),
+                                    duedate:
+                                        snapshot.data?.docs[index].get('duedate'),
+                                    name: snapshot.data?.docs[index].get('name'),
+                                    id: snapshot.data?.docs[index].get('id'),
+                                    state: snapshot.data?.docs[index].get('state'),
+                                    type: snapshot.data?.docs[index].get('type'),
+                                    completed: snapshot.data?.docs[index]
+                                        .get('completed'));
 
-                              return ItemsView(task: task, color: index);
-                            } else {
-                              return Container(
-                                height: 0,
-                              );
-                            }
-                          })),
-                        ),
-                      );
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
-                )
-        ],
+                                return ItemsView(task: task, color: index);
+                              } else {
+                                return Container(
+                                  height: 0,
+                                );
+                              }
+                            })),
+                          );
+
+                      },
+                    ),
+             )
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
