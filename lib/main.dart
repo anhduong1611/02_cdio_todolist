@@ -21,8 +21,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
-      MaterialApp(
-
+      const MaterialApp(
     home: splash_screen(),
     debugShowCheckedModeBanner: false,
   ));
@@ -70,8 +69,12 @@ class Mytodolist extends StatefulWidget {
 
 class _MytodolistState extends State<Mytodolist> {
   int _selectedIndex = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
 
-
+  }
   static const List<Widget> _widgetOptions = <Widget>[
     MTask(),
     MCalendar(),

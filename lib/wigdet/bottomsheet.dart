@@ -238,14 +238,17 @@ dropdownColor: Colors.white,
                 ),
               ),
               InkWell(
+
                 onTap: () {
                   Navigator.of(context).push(
                     showPicker(
+
                       accentColor: MColor.blue_main,
                       showSecondSelector: false,
                       context: context,
                       value: _time,
                       is24HrFormat: true,
+
                       onChange: onTimeChanged,
                       cancelStyle: TextStyle(
                           color: MColor.cancel_text,
