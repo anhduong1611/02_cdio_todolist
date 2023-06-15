@@ -1,10 +1,13 @@
+import 'package:cdio/wigdet/bottomsheet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+import 'Todolist_Color.dart';
 
 class MCalendar extends StatefulWidget {
   const MCalendar({Key? key}) : super(key: key);
@@ -14,28 +17,66 @@ class MCalendar extends StatefulWidget {
 }
 
 class _MCalendarState extends State<MCalendar> {
-  List<Color> _colorCollection = <Color>[];
-  MeetingDataSource? events;
-  String? selected_date;
-  final myController = TextEditingController();
-  late List<Meeting> list;
-  int count = 0;
-  late DateTime _minDate, _maxDate;
-  final List<String> options = <String>['Add', 'Delete', 'Update'];
-  final databaseReference = FirebaseFirestore.instance;
-   String id = DateTime.now().toString();
+  // String? selected_date;
+  //   // selected_date = details.date!
+  //   //                     .toString()
+  //   //                     .split(' ')[0]
+  //   //                     .split('-')
+  //   //                     .reversed
+  //   //                     .toList()
+  //   //                     .join('/');
+  String _selectedDate = '';
+  String _dateCount = '';
+  String _range = '';
+  String _rangeCount = '';
+  CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
   @override
   void initState() {
-    _initializeEventColor();
-    _minDate = DateTime(2020, 3, 5, 9, 0, 0);
-    _maxDate = DateTime(2024, 3, 25, 9, 0, 0);
     getDataFromFireStore().then((results) {
       WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         setState(() {});
       });
     });
     super.initState();
+  }
+
+  void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
+    /// The argument value will return the changed date as [DateTime] when the
+    /// widget [SfDateRangeSelectionMode] set as single.
+    ///
+    /// The argument value will return the changed dates as [List<DateTime>]
+    /// when the widget [SfDateRangeSelectionMode] set as multiple.
+    ///
+    /// The argument value will return the changed range as [PickerDateRange]
+    /// when the widget [SfDateRangeSelectionMode] set as range.
+    ///
+    /// The argument value will return the changed ranges as
+    /// [List<PickerDateRange] when the widget [SfDateRangeSelectionMode] set as
+    /// multi range.
+    setState(() {
+      if (args.value is PickerDateRange) {
+        _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
+            // ignore: lines_longer_than_80_chars
+            ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
+      } else if (args.value is DateTime) {
+        _selectedDate = args.value
+            .toString()
+            .split(' ')[0]
+            .split('-')
+            .reversed
+            .toList()
+            .join('/');
+        ;
+   
+
+        print(_selectedDate);
+      } else if (args.value is List<DateTime>) {
+        _dateCount = args.value.length.toString();
+      } else {
+        _rangeCount = args.value.length.toString();
+      }
+    });
   }
   // void refreshpage() {
   //   setState(() {
@@ -44,168 +85,111 @@ class _MCalendarState extends State<MCalendar> {
   // }
 
   Future<void> getDataFromFireStore() async {
-    var snapShotsValue = await databaseReference
+    var snapShotsValue = await FirebaseFirestore.instance
         .collection("Users")
         .doc(FirebaseAuth.instance.currentUser?.uid.toString())
         .collection('Tasks')
         .get();
 
-    // if (snapShotsValue.exists) {
-    //   var data = snapShotsValue.data();
-    //   if (data != null) {
-    //     var meeting = Meeting(
-    //       eventName: data['Subject'],
-    //       from: DateFormat('dd/MM/yyyy').parse(data['StartTime']),
-    //       to: DateFormat('dd/MM/yyyy').parse(data['EndTime']),
-    //       background: Color.fromARGB(255, 21, 207, 167),
-    //       isAllDay: false,
-    //     );
-    //     print('ghi thanh cong');
-    //   }
+    //   list = snapShotsValue.docs
+    //       .map((e) => Meeting(
+    //           date: e.data()['date'],
+    //           id: e.data()['id'],
+    //           name: e.data()['name'],
+    //           duedate: e.data()['duedate'],
+    //           color: Color.fromARGB(255, 21, 207, 167),
+    //           reminder: e.data()['reminder']))
+    //       .toList();
+    //   setState(() {
+    //     events = MeetingDataSource(list);
+    //   });
     // }
-
-    list = snapShotsValue.docs
-        .map((e) => Meeting(
-            date: e.data()['date'],
-            id: e.data()['id'],
-            name: e.data()['name'],
-            duedate: e.data()['duedate'],
-            color: Color.fromARGB(255, 21, 207, 167),
-            reminder: e.data()['reminder']))
-        .toList();
-    setState(() {
-      events = MeetingDataSource(list);
-    });
   }
+  CollectionReference user = FirebaseFirestore.instance.collection('Users')
+  .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+  .collection('Tasks');
 
+  String currentDate = DateFormat('MMddyyyy').format(DateTime.now());
+
+  var color = Colors.white;
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Scaffold(
-          body: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 50),
-                child: SfCalendar(
-                  minDate: _minDate,
-                  maxDate: _maxDate,
-                  view: CalendarView.month,
-                  todayHighlightColor: const Color.fromARGB(40, 10, 10, 191),
-                  initialDisplayDate: DateTime(2023, 6, 6, 9, 0, 0),
-                  dataSource: events,
-                  // showCurrentTimeIndicator: true,
-                  onTap: (CalendarTapDetails details) {
-                    selected_date = details.date!
-                        .toString()
+    return Scaffold(
+      body: Column(
+        mainAxisSize: MainAxisSize.min  ,
+        children: [
+          SfDateRangePicker(
+            backgroundColor: color,
+            onSelectionChanged:(dateRangePickerSelectionChangedArgs) {
+              setState(() {
+                currentDate = DateFormat('MMddyyyy').format(dateRangePickerSelectionChangedArgs.value);
+              });
+              print(currentDate);
+            },
+            selectionMode: DateRangePickerSelectionMode.single,
+            initialSelectedRange: PickerDateRange(
+                DateTime.now().subtract(const Duration(days: 4)),
+                DateTime.now().add(const Duration(days: 3))),
+          ),
+          FutureBuilder<QuerySnapshot>(
+              future: user.get(),
+              builder: (context, snapshot) {
+                 if (snapshot.connectionState == ConnectionState.done) {
+                  return Expanded(
+                    child: ListView(
+                      children: snapshot.data!.docs.where((element) {
+                        Map<String, dynamic> data = element.data() as Map<String, dynamic>;
+                        return DateFormat('MMddyyyy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(data!["date"]))) == currentDate;
+                      },).map((DocumentSnapshot doc) {
+                        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+                        var time = DateTime.fromMillisecondsSinceEpoch(int.parse(data["date"]),isUtc: true).toString()
                         .split(' ')[0]
                         .split('-')
                         .reversed
                         .toList()
                         .join('/');
-    
-                    print(selected_date);
-                  },
-                  monthViewSettings: MonthViewSettings(
-                    showAgenda: true,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 500),
-                child: TextField(
-                    controller: myController,
-                    decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Enter your username')),
+                        print(time);
+                
+                    
+                        return SizedBox(
+                          height: 100,
+                          child: ListTile(
+                              title:  Text('name:${data['name']}', style: TextStyle(color: Colors.black),),
+                              subtitle:  Text('date: $time',style: TextStyle(color: Colors.black),),
+                              tileColor: Colors.cyan,
+                          ),
+                        );
+                        
+                        ;
+                      }).toList(),
+                    ),
+                  );
+                  
+                } else{
+                return Text("loading");
+                }
+              },
               )
-              // ListView.builder(
-              //   itemCount: list.length,
-              //   itemBuilder: (context, index) {
-              //     Meeting meeting = list[index];
-              //     return ListTile(
-              //       title: Text('${meeting.eventName}'),
-              //       subtitle: Text('From: ${meeting.from}, To: ${meeting.to}'),
-              //       trailing: ElevatedButton(
-              //         child: Text('Button Text'),
-              //         onPressed: () {
-              //           // Button Clicked
-              //         },
-              //       ),
-              //     );
-              //   },
-              // )
-            ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-             
-              print(myController);
-              databaseReference
-                  .collection("Users")
-                  .doc(FirebaseAuth.instance.currentUser?.uid.toString())
-                  .collection('Tasks')
-                  .doc(id)
-                  .set({
-                'date': '$selected_date',
-                'duedate': '$selected_date',
-                'id': id,
-                'name': myController.text,
-                'reminder': '$selected_date',
-              });
-              getDataFromFireStore();
-    
-              print(selected_date);
-            },
-            child: Icon(Icons.add),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                backgroundColor: Colors.white,
+                context: context,
+                builder: (BuildContext contexxt) {
+                  return BottomSheetTask();
+                });
+          },
+          backgroundColor: MColor.blue_main,
+          child: const Icon(
+            Icons.add,
           )),
     );
-  }
-
-  void _initializeEventColor() {
-    _colorCollection.add(const Color(0xFF0F8644));
-    _colorCollection.add(const Color(0xFF8B1FA9));
-    _colorCollection.add(const Color(0xFFD20100));
-    _colorCollection.add(const Color(0xFFFC571D));
-    _colorCollection.add(const Color(0xFF36B37B));
-    _colorCollection.add(const Color(0xFF01A1EF));
-    _colorCollection.add(const Color(0xFF3D4FB5));
-    _colorCollection.add(const Color(0xFFE47C73));
-    _colorCollection.add(const Color(0xFF636363));
-    _colorCollection.add(const Color(0xFF0A8043));
-  }
-}
-
-class MeetingDataSource extends CalendarDataSource {
-  MeetingDataSource(List<Meeting> source) {
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].from;
-  }
-
-  @override
-  DateTime getEndTime(int index) {
-    return appointments![index].to;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return appointments![index].isAllDay;
-  }
-
-  @override
-  String getSubject(int index) {
-    return appointments![index].eventName;
-  }
-
-  @override
-  Color getColor(int index) {
-    return appointments![index].background;
   }
 }
 
