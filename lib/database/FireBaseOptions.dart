@@ -11,7 +11,8 @@ class FireBaseOptions{
     );
   }
    void SavetoFireBase(Task_todo task) async{
-    DateTime time_ran_id = DateTime.now();
+//     DateTime time_ran_id = DateTime.now();
+      task.id = DateTime.now().millisecondsSinceEpoch.toString();
     final docRef = db
         .collection('Users')
         .doc(FirebaseAuth.instance.currentUser?.uid.toString())
@@ -21,8 +22,9 @@ class FireBaseOptions{
       toFirestore: (Task_todo city, options) =>
           city.toFirestore(),
     )
-        .doc(time_ran_id.toString());
-    await docRef.set(task!);
+//         .doc(time_ran_id.toString());
+//     await docRef.set(task!);
+       .doc(task.id).set(task);
     print('Success add task');
   }
 }
