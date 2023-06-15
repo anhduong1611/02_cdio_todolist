@@ -129,27 +129,32 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
               ),
               InkWell(
                 onTap: () {
-                  DateTime time_ran_id = DateTime.now();
-                  Task_todo task = Task_todo(
-                      type: type_task,
-                      date: set_date_choose,
-                      name: controller_name_Task.text,
-                      reminder: set_time_reminder,
-                      completed: false,
-                      state: options.setStatetask(set_duedate_choose, false),
-                      duedate:
-                          set_duedate_choose, //DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
-                      id: time_ran_id.toString());
-                  options.SavetoFireBase(task);
-                  options.update_state_task(
-                      time_ran_id.toString(), set_duedate_choose, false);
-                  print('date task' + set_date_choose);
-                  print('Date to day' +
-                      DateTime(DateTime.now().year, DateTime.now().month,
-                              DateTime.now().day, 0, 0, 0)
-                          .millisecondsSinceEpoch
-                          .toString());
-                  Navigator.pop(context);
+                  if(controller_name_Task.text == "")
+                     showAlertDialog(context);
+                  else{
+                    DateTime time_ran_id = DateTime.now();
+                    Task_todo task = Task_todo(
+                        type: type_task,
+                        date: set_date_choose,
+                        name: controller_name_Task.text,
+                        reminder: set_time_reminder,
+                        completed: false,
+                        state: options.setStatetask(set_duedate_choose, false),
+                        duedate:
+                        set_duedate_choose, //DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
+                        id: time_ran_id.toString());
+                    options.SavetoFireBase(task);
+                    options.update_state_task(
+                        time_ran_id.toString(), set_duedate_choose, false);
+                    print('date task' + set_date_choose);
+                    print('Date to day' +
+                        DateTime(DateTime.now().year, DateTime.now().month,
+                            DateTime.now().day, 0, 0, 0)
+                            .millisecondsSinceEpoch
+                            .toString());
+                    Navigator.pop(context);
+                  }
+
                 },
                 child: const Icon(
                   Icons.add,
@@ -291,4 +296,33 @@ setColor(String values){
     return MColor.personal;
   if(values == 'Work')
     return MColor.work;
+}
+showAlertDialog(BuildContext context) {
+  // Create button
+  Widget okButton = InkWell(
+    child: Text("OK"),
+    onTap: () {
+      Navigator.of(context).pop();
+    },
+  );
+
+  // Create AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Warning",style: TextStyle(color: MColor.red_main),),
+    content: Text("Name task not empty."),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(child: alert,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(100))
+      ),);
+    },
+  );
 }
