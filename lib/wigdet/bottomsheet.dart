@@ -142,10 +142,10 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                         state: options.setStatetask(set_duedate_choose, false),
                         duedate:
                         set_duedate_choose, //DateTime.fromMillisecondsSinceEpoch(msIntFromServer)
-                        id: time_ran_id.toString());
+                        id: time_ran_id.millisecondsSinceEpoch.toString());
                     options.SavetoFireBase(task);
                     options.update_state_task(
-                        time_ran_id.toString(), set_duedate_choose, false);
+                        time_ran_id.millisecondsSinceEpoch.toString(), set_duedate_choose, false);
                     print('date task' + set_date_choose);
                     print('Date to day' +
                         DateTime(DateTime.now().year, DateTime.now().month,

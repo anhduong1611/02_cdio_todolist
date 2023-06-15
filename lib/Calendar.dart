@@ -1,3 +1,5 @@
+import 'dart:core';
+
 import 'package:cdio/wigdet/bottomsheet.dart';
 import 'package:cdio/wigdet/item_task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+import 'OTask.dart';
 import 'Todolist_Color.dart';
 
 class MCalendar extends StatefulWidget {
@@ -107,26 +110,36 @@ class _MCalendarState extends State<MCalendar> {
 
   String currentDate = DateFormat('MMddyyyy').format(DateTime.now());
 
-  var color = Colors.white;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          SfDateRangePicker(
-            backgroundColor: color,
-            onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
-              setState(() {
-                currentDate = DateFormat('MMddyyyy')
-                    .format(dateRangePickerSelectionChangedArgs.value);
-              });
-              print(currentDate);
-            },
-            selectionMode: DateRangePickerSelectionMode.single,
-            initialSelectedRange: PickerDateRange(
-                DateTime.now().subtract(const Duration(days: 4)),
-                DateTime.now().add(const Duration(days: 3))),
+          Padding(
+            padding: EdgeInsets.only(top: 30,left: 10,right: 10,bottom: 10),
+            child: SfDateRangePicker(
+
+              rangeTextStyle: TextStyle(fontWeight: FontWeight.bold),
+              toggleDaySelection: true,
+              allowViewNavigation: true,
+
+              navigationDirection: DateRangePickerNavigationDirection.horizontal,
+              selectionColor: MColor.red_main,
+              backgroundColor: MColor.blue_background_calendar,
+              showNavigationArrow: true,
+              onSelectionChanged: (dateRangePickerSelectionChangedArgs) {
+                setState(() {
+                  currentDate = DateFormat('MMddyyyy')
+                      .format(dateRangePickerSelectionChangedArgs.value);
+                });
+              },
+              selectionMode: DateRangePickerSelectionMode.single,
+              initialSelectedRange: PickerDateRange(
+                  DateTime.now().subtract(const Duration(days: 4)),
+                  DateTime.now().add(const Duration(days: 3))),
+            ),
           ),
           isLoad
               ? CircularProgressIndicator()
@@ -134,32 +147,40 @@ class _MCalendarState extends State<MCalendar> {
                   future: user.get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
+                      print("dcne");
                       return Expanded(
-                        child: ListView(
-                          children: snapshot.data!.docs.where(
-                            (element) {
-                              Map<String, dynamic> data =
-                                  element.data() as Map<String, dynamic>;
-                              return DateFormat('MMddyyyy').format(
-                                      DateTime.fromMillisecondsSinceEpoch(
-                                          int.parse(data!["date"]))) ==
-                                  currentDate;
-                            },
-                          ).map((DocumentSnapshot doc) {
-                            Map<String, dynamic> data =
-                                doc.data() as Map<String, dynamic>;
-                            DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-                                    int.parse(data["date"]));
-                            String time = DateFormat('dd/MM/yyyy').format(dateTime);
-                            print(data['name']);
-                            return ItemsView(
-                              task:  Task_todo(),color: 1,
-                               );
-                          }).toList(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                              itemBuilder: ((context, index) {
+                            if (DateFormat('MMddyyyy').format(
+                                    DateTime.fromMillisecondsSinceEpoch(int.parse(
+                                        snapshot.data?.docs[index]
+                                            .get('duedate')))) ==
+                                currentDate) {
+                              Task_todo task = Task_todo(
+                                  date: snapshot.data?.docs[index].get('date'),
+                                  duedate:
+                                      snapshot.data?.docs[index].get('duedate'),
+                                  name: snapshot.data?.docs[index].get('name'),
+                                  id: snapshot.data?.docs[index].get('id'),
+                                  state: snapshot.data?.docs[index].get('state'),
+                                  type: snapshot.data?.docs[index].get('type'),
+                                  completed: snapshot.data?.docs[index]
+                                      .get('completed'));
+
+                              return ItemsView(task: task, color: index);
+                            } else {
+                              return Container(
+                                height: 0,
+                              );
+                            }
+                          })),
                         ),
                       );
                     } else {
-                      return Text("loading");
+                      return Center(child: CircularProgressIndicator());
                     }
                   },
                 )
@@ -185,3 +206,31 @@ class _MCalendarState extends State<MCalendar> {
     );
   }
 }
+// itemBuilder: (BuildContext context, int index) {
+// snapshot.data!.docs.where(
+// (element) {
+// Map<String, dynamic> data =
+// // element.data() as Map<String, dynamic>;
+// return DateFormat('MMddyyyy').format(
+// DateTime.fromMillisecondsSinceEpoch(
+// int.parse(data!["date"]))) ==
+// currentDate;
+// },
+// ).map((DocumentSnapshot doc) {
+// Map<String, dynamic> data =
+// doc.data() as Map<String, dynamic>;
+// DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+// int.parse(data["date"]));
+// String time = DateFormat('dd/MM/yyyy').format(dateTime);
+// Task_todo task = Task_todo(
+// type: data['type'],
+// date:data['date'],
+// duedate:data['duedate'],
+// name:data['name'],
+// id: data['id'],
+// state: data['state'],
+// completed:data['completed']);
+// return ItemsView(
+// task:  task,color: 1,
+// );
+// },

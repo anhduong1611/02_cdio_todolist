@@ -16,4 +16,5 @@ class MColor {
   static const duedate = Color(0x2e50c2c9);
   static const personal = Color(0xff6DEFD8);
   static const work = Color(0xffAEEF6D);
+  static const blue_background_calendar = Color(0x50c2c9);
 }
