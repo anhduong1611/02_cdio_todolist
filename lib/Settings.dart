@@ -114,9 +114,10 @@ class _MSettingsState extends State<MSettings> {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: InkWell(
-                  onTap: (){
-
-                  },
+                  onTap: () async {
+                        await logout();
+                        Navigator.pop(context);
+                      },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
