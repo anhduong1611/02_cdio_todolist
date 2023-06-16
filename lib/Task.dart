@@ -105,7 +105,7 @@ class _MTaskState extends State<MTask> {
                     builder: (context, snapshot) {
                       if (check_search) {
                         return ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
+                          itemCount: snapshot.data?.docs.length ??0,
                             itemBuilder: (BuildContext context,int index){
                               print('name'+snapshot.data?.docs[index].get('name'));
                           if(snapshot.data?.docs[index].get('name').contains(controller_search.text) == true)
@@ -186,8 +186,10 @@ class _MTaskState extends State<MTask> {
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             showModalBottomSheet(
+
                 isScrollControlled: true,
                 shape: RoundedRectangleBorder(
+
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 backgroundColor: Colors.white,
