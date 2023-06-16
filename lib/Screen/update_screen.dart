@@ -21,7 +21,12 @@ class MUpdateScreen extends StatefulWidget {
 const List<String> list = <String>['No type', 'Important', 'Personal', 'Work'];
 class _MUpdateScreenState extends State<MUpdateScreen> {
   final name_controller = TextEditingController();
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    name_controller.text = this.widget.task_todo.name.toString();
+  }
   final FireBaseOptions options = new FireBaseOptions();
   String _getValueText(
       CalendarDatePicker2Type datePickerType,
@@ -84,7 +89,7 @@ class _MUpdateScreenState extends State<MUpdateScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    name_controller.text = this.widget.task_todo.name.toString();
+
     type_task = this.widget.task_todo.type.toString();
     List<DateTime?> _dialogCalendarPickerValue = [
       DateTime.fromMillisecondsSinceEpoch(int.parse(widget.task_todo.date.toString())),
@@ -184,6 +189,9 @@ class _MUpdateScreenState extends State<MUpdateScreen> {
                     child: TextField(
                       controller: name_controller,
                         maxLines: 8,
+                        onChanged: (value){
+                            controller_name_Task.text = value;
+                        },
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(10),
                           hintText: this.widget.task_todo.name,
