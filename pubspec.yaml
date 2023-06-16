@@ -43,7 +43,7 @@ dependencies:
   intl: ^0.18.1
   grouped_list: ^5.1.2
   google_sign_in: ^5.3.3
-  syncfusion_flutter_calendar: ^21.2.9
+  syncfusion_flutter_calendar: ^21.2.10
   table_calendar: ^3.0.9
   flutter_local_notifications: ^14.1.1
   flutter_email_sender: ^5.0.2

@@ -65,54 +65,6 @@ class _MSettingsState extends State<MSettings> {
 
               Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        SvgPicture.asset('assets/icons/ic_dark_mode.svg'),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text('Dark Mode'),
-                        ),
-                      ],
-                    ),
-                    Switch(
-                    activeColor: MColor.blue_main,
-                        value: dark_mode, onChanged: (values){
-                      setState(() {
-                        dark_mode = values;
-                      });
-                    })
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: InkWell(
-                  onTap: (){
-
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-
-                        children: [
-                          SvgPicture.asset('assets/icons/ic_language.svg'),
-                          Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Text('Language'),
-                          ),
-                        ],
-                      ),
-                      Icon(Icons.navigate_next),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
                 child: InkWell(
                   onTap: (){
                       Navigator.push(context, MaterialPageRoute(builder: (builder)=>MFeedBack()));

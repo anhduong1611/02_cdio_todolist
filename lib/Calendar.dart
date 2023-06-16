@@ -115,19 +115,15 @@ class _MCalendarState extends State<MCalendar> {
     double screenW = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SizedBox(
-        width: screenW,
-        height: screenHeight,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 30,left: 10,right: 10,bottom: 10),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: 30,left: 10,right: 10,bottom: 10),
+            child: Center(
               child: SfDateRangePicker(
-
                 rangeTextStyle: TextStyle(fontWeight: FontWeight.bold),
                 toggleDaySelection: true,
                 allowViewNavigation: true,
-
                 navigationDirection: DateRangePickerNavigationDirection.horizontal,
                 selectionColor: MColor.red_main,
                 backgroundColor: MColor.blue_background_calendar,
@@ -144,44 +140,44 @@ class _MCalendarState extends State<MCalendar> {
                     DateTime.now().add(const Duration(days: 3))),
               ),
             ),
-             Expanded(
-               child: StreamBuilder(
-                      stream: user.orderBy('state', descending: false).snapshots(),
-                      builder: (context, snapshot) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListView.builder(
-                              itemCount: (snapshot.data?.docs.length) ?? 0,
-                                itemBuilder: ((context, index) {
-                              if (DateFormat('MMddyyyy').format(
-                                      DateTime.fromMillisecondsSinceEpoch(int.parse(
-                                          snapshot.data?.docs[index]
-                                              .get('duedate')))) ==
-                                  currentDate) {
-                                Task_todo task = Task_todo(
-                                    date: snapshot.data?.docs[index].get('date'),
-                                    duedate:
-                                        snapshot.data?.docs[index].get('duedate'),
-                                    name: snapshot.data?.docs[index].get('name'),
-                                    id: snapshot.data?.docs[index].get('id'),
-                                    state: snapshot.data?.docs[index].get('state'),
-                                    type: snapshot.data?.docs[index].get('type'),
-                                    completed: snapshot.data?.docs[index]
-                                        .get('completed'));
-                                return ItemsView(task: task, color: index);
-                              } else {
-                                return Container(
-                                  height: 0,
-                                );
-                              }
-                            })),
-                          );
+          ),
+           Expanded(
+             child: StreamBuilder(
+                    stream: user.orderBy('state', descending: false).snapshots(),
+                    builder: (context, snapshot) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            itemCount: (snapshot.data?.docs.length) ?? 0,
+                              itemBuilder: ((context, index) {
+                            if (DateFormat('MMddyyyy').format(
+                                    DateTime.fromMillisecondsSinceEpoch(int.parse(
+                                        snapshot.data?.docs[index]
+                                            .get('duedate')))) ==
+                                currentDate) {
+                              Task_todo task = Task_todo(
+                                  date: snapshot.data?.docs[index].get('date'),
+                                  duedate:
+                                      snapshot.data?.docs[index].get('duedate'),
+                                  name: snapshot.data?.docs[index].get('name'),
+                                  id: snapshot.data?.docs[index].get('id'),
+                                  state: snapshot.data?.docs[index].get('state'),
+                                  type: snapshot.data?.docs[index].get('type'),
+                                  completed: snapshot.data?.docs[index]
+                                      .get('completed'));
+                              return ItemsView(task: task, color: index);
+                            } else {
+                              return Container(
+                                height: 0,
+                              );
+                            }
+                          })),
+                        );
 
-                      },
-                    ),
-             )
-          ],
-        ),
+                    },
+                  ),
+           )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -203,31 +199,3 @@ class _MCalendarState extends State<MCalendar> {
     );
   }
 }
-// itemBuilder: (BuildContext context, int index) {
-// snapshot.data!.docs.where(
-// (element) {
-// Map<String, dynamic> data =
-// // element.data() as Map<String, dynamic>;
-// return DateFormat('MMddyyyy').format(
-// DateTime.fromMillisecondsSinceEpoch(
-// int.parse(data!["date"]))) ==
-// currentDate;
-// },
-// ).map((DocumentSnapshot doc) {
-// Map<String, dynamic> data =
-// doc.data() as Map<String, dynamic>;
-// DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-// int.parse(data["date"]));
-// String time = DateFormat('dd/MM/yyyy').format(dateTime);
-// Task_todo task = Task_todo(
-// type: data['type'],
-// date:data['date'],
-// duedate:data['duedate'],
-// name:data['name'],
-// id: data['id'],
-// state: data['state'],
-// completed:data['completed']);
-// return ItemsView(
-// task:  task,color: 1,
-// );
-// },

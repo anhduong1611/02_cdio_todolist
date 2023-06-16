@@ -112,7 +112,6 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
           top: 10,
           left: 30,
           right: 30),
-
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -175,6 +174,7 @@ class _BottomSheetTaskState extends State<BottomSheetTask> {
                     //color: (this.widget.task.completed) as bool ? MColor.grey_completed_background: (this.widget.color % 2 == 0 ? MColor.blue_op : Colors.white),
                     borderRadius: BorderRadius.all(Radius.circular(100))),
                 child: DropdownButton<String>(
+
                     alignment: Alignment.center,
                     underline: Container(
                     height: 0,
@@ -242,42 +242,43 @@ dropdownColor: Colors.white,
                   size: 35,
                 ),
               ),
-              InkWell(
+              Visibility(
+                visible: false,
+                child: InkWell(
 
-                onTap: () {
-                  Navigator.of(context).push(
-                    showPicker(
-
-                      accentColor: MColor.blue_main,
-                      showSecondSelector: false,
-                      context: context,
-                      value: _time,
-                      is24HrFormat: true,
-
-                      onChange: onTimeChanged,
-                      cancelStyle: TextStyle(
-                          color: MColor.cancel_text,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                      okStyle: TextStyle(
-                          color: MColor.blue_main,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                      minuteInterval: TimePickerInterval.FIVE,
-                      // Optional onChange to receive value as DateTime
-                      onChangeDateTime: (DateTime dateTime) {
-                        setState(() {
-                          time_reminder = dateTime;
-                          set_time_reminder = time_reminder.toString();
-                        });
-                      },
-                    ),
-                  );
-                },
-                child: const Icon(
-                  Icons.add_alert_rounded,
-                  color: MColor.red_main,
-                  size: 35,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      showPicker(
+                        accentColor: MColor.blue_main,
+                        showSecondSelector: false,
+                        context: context,
+                        value: _time,
+                        is24HrFormat: true,
+                        onChange: onTimeChanged,
+                        cancelStyle: TextStyle(
+                            color: MColor.cancel_text,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                        okStyle: TextStyle(
+                            color: MColor.blue_main,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                        minuteInterval: TimePickerInterval.FIVE,
+                        // Optional onChange to receive value as DateTime
+                        onChangeDateTime: (DateTime dateTime) {
+                          setState(() {
+                            time_reminder = dateTime;
+                            set_time_reminder = time_reminder.toString();
+                          });
+                        },
+                      ),
+                    );
+                  },
+                  child: const Icon(
+                    Icons.add_alert_rounded,
+                    color: MColor.red_main,
+                    size: 35,
+                  ),
                 ),
               ),
             ],
